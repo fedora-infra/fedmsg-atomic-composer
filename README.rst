@@ -9,6 +9,6 @@ Running
 .. code-block:: bash
 
    sudo yum install fedmsg-hub
-   mv config.py /etc/fedmsg.d/kojiconsumer.py
+   sudo cp config.py /etc/fedmsg.d/kojiconsumer.py
    python setup.py egg_info
    PYTHONPATH=$(pwd) fedmsg-hub
