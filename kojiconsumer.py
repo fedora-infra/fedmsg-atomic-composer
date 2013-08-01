@@ -12,5 +12,4 @@ class KojiConsumer(fedmsg.consumers.FedmsgConsumer):
         super(KojiConsumer, self).__init__(*args, **kw)
 
     def consume(self, msg):
-        print(msg['topic'])
-        pprint(msg['body'])
+        pprint(msg)
