@@ -3,7 +3,6 @@ import fedmsg.consumers
 
 class OSTreeComposer(fedmsg.consumers.FedmsgConsumer):
     topic = ['org.fedoraproject.prod.bodhi.updates.fedora.sync',
-             #'org.fedoraproject.prod.compose.branched.complete',
              'org.fedoraproject.prod.compose.branched.rsync.complete',
              'org.fedoraproject.prod.compose.rawhide.rsync.complete']
     config_key = 'ostreecomposer'
