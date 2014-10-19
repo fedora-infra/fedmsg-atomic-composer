@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(
-    name='kojiconsumer',
+    name='ostreecomposer',
     version='0.0.1',
     description='',
     author='',
@@ -11,6 +11,6 @@ setup(
     packages=[],
     entry_points="""
     [moksha.consumer]
-    kojiconsumer = kojiconsumer:KojiConsumer
+    ostreecomposer = ostreecomposer:OSTreeComposer
     """,
 )

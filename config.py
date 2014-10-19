@@ -1,1 +1,1 @@
-config = dict(kojiconsumer=True)
+config = dict(ostreecomposer=True)
