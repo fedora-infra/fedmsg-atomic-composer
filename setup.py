@@ -8,7 +8,7 @@ setup(
     author='Luke Macken',
     author_email='lmacken@redhat.com',
     url='',
-    install_requires=["fedmsg"],
+    install_requires=['fedmsg', 'mock'],
     packages=[],
     entry_points="""
     [moksha.consumer]
