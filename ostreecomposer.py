@@ -7,8 +7,9 @@ class OSTreeComposer(fedmsg.consumers.FedmsgConsumer):
              'org.fedoraproject.prod.compose.rawhide.rsync.complete']
     config_key = 'ostreecomposer'
 
-    def __init__(self, *args, **kw):
-        super(OSTreeComposer, self).__init__(*args, **kw)
+    def __init__(self, hub, *args, **kw):
+        super(OSTreeComposer, self).__init__(hub, *args, **kw)
+        self.config = hub.config
 
     def consume(self, msg):
         self.log.debug(msg)
@@ -27,9 +28,12 @@ class OSTreeComposer(fedmsg.consumers.FedmsgConsumer):
                 self.log.warn('Compose not done?')
                 return
         elif 'updates' in topic:
-            self.log.info('New %s %s compose ready', release, repo)
             release = body['msg']['release']
             repo = body['msg']['repo']
+            self.log.info('New %s %s compose ready', release, repo)
+
+        # Trigger the rpm-ostree taskrunner
+        self.call(['touch', self.config['touch_file']])
 
         # ostree compose
         # extract summary
