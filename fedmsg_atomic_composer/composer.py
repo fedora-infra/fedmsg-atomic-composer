@@ -9,7 +9,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
     topic = ['org.fedoraproject.prod.bodhi.updates.fedora.sync',
              'org.fedoraproject.prod.compose.branched.rsync.complete',
              'org.fedoraproject.prod.compose.rawhide.rsync.complete']
-    config_key = 'ostreecomposer'
+    config_key = 'fedmsg_atomic_composer'
 
     def __init__(self, hub, *args, **kw):
         super(AtomicComposer, self).__init__(hub, *args, **kw)
