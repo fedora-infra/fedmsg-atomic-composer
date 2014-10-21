@@ -1,2 +1,4 @@
-*.pyc
+*.py[co]
+*.sw[po]
 *.egg-info
+dist
