@@ -1,0 +1,12 @@
+- hosts: localhost
+  sudo: yes
+
+  tasks:
+    - yum: name={{ item }} state=present
+      with_items:
+        - fedmsg-hub
+        - rpm-ostree-toolbox
+
+    - file: path=/srv/fedora-atomic/output owner=root group=root mode=655 state=directory
+
+    - service: name=atomic-compose-rawhide state=running
