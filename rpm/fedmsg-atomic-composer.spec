@@ -29,6 +29,10 @@ then triggers Atomic OSTree composes.
 %{__python} setup.py build
 
 
+%check
+%{__python} test.py
+
+
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
 install -D fedmsg.d/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
