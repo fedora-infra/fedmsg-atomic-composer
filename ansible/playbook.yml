@@ -8,9 +8,14 @@
         - rpm-ostree-toolbox
         #- fedmsg-atomic-composer
 
-    - file: path=/srv/fedora-atomic/output owner=root group=root mode=655 state=directory
-    - file: path=/srv/fedora-atomic/rawhide/tasks/treecompose owner=root group=root mode=655 state=directory
-    - file: path=/srv/inbox owner=root group=root mode=655 state=directory
+    - file: path=/srv/fedora-atomic/output
+            owner=root group=root mode=655 state=directory
+
+    - file: path=/srv/fedora-atomic/rawhide/tasks/treecompose
+            owner=root group=root mode=655 state=directory
+
+    - file: path=/srv/inbox
+            owner=root group=root mode=655 state=directory
 
     - service: name=atomic-compose-rawhide state=running
 
