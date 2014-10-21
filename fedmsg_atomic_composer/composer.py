@@ -14,6 +14,10 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
     def __init__(self, hub, *args, **kw):
         super(AtomicComposer, self).__init__(hub, *args, **kw)
         self.config = hub.config
+        self.notifier = inotify.INotify()
+        self.notifier.startReading()
+        self.notifier.watch(filepath.FilePath(self.config['watch_dir']),
+                            callbacks=[self.output_changed])
 
     def consume(self, msg):
         self.log.debug(msg)
@@ -48,3 +52,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
                              stderr=subprocess.PIPE, **kwargs)
         out, err = p.communicate()
         return out, err, p.returncode
+
+    def output_changed(self, path, mask):
+        self.log.info('event %s on %s',
+                      ', '.join(inotify.humanReadableMask(mask)), path)

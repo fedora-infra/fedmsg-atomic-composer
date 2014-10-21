@@ -11,6 +11,7 @@ class FakeHub(object):
             'environment': 'dev',
             'releng_fedmsg_certname': None,
             'touch_file': '/tmp/treecompose',
+            'watch_dir': '/srv/fedora-atomic/output',
         }
 
     def subscribe(self, *args, **kw):
