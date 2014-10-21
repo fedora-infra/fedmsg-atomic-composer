@@ -18,16 +18,22 @@
         - rawhide
         - f21
 
-    - file: path=/srv/inbox
+    - file: path=/srv/inbox/{{ item }}
             owner=root group=root mode=655 state=directory
+      with_items:
+        - rawhide
+        - f21
 
     - git: repo=https://git.fedorahosted.org/git/fedora-atomic.git
            dest=/srv/fedora-atomic/rawhide/fedora-atomic
 
     - git: repo=https://git.fedorahosted.org/git/fedora-atomic.git
            dest=/srv/fedora-atomic/f21/fedora-atomic
-           branch=f21
+           version=f21
 
-    - service: name=atomic-compose-rawhide state=running
+    - service: name=atomic-compose-{{ item }} state=running
+      with_items:
+        - rawhide
+        - f21
 
     - service: name=fedmsg-hub state=running
