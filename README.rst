@@ -1,15 +1,19 @@
-fedmsg-ostree-composer
+fedmsg-atomic-composer
 ======================
 
-Triggers rpm-ostree composes when Fedora updates/rawhide/branched
-repositories are updated.
+Triggers `Atomic <http://projectatomic.io>`_ ostree composes when Fedora
+updates/rawhide/branched repositories are updated.
 
-Running
--------
+Build
+-----
 
 .. code-block:: bash
 
-   sudo yum install fedmsg-hub
-   sudo cp config.py /etc/fedmsg.d/ostreecomposer.py
-   python setup.py egg_info
-   PYTHONPATH=$(pwd) fedmsg-hub
+   ./build.sh
+
+Deploy
+------
+
+.. code-block:: bash
+
+   ansible-playbook --ask-sudo-pass ansible/playbook.yml
