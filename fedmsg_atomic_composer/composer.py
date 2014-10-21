@@ -45,8 +45,9 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
             self.trigger_compose(release)
 
     def trigger_compose(self, repo):
-        """Trigger the rpm-ostree taskrunner"""
-        self.call(['touch', os.path.join(self.config['touch_dir'], repo)])
+        """Trigger the rpm-ostree-toolbox taskrunner treecompose"""
+        self.call(['touch', os.path.join(self.config['touch_dir'],
+                   repo, 'treecompose')])
 
     def call(self, cmd, **kwargs):
         self.log.info('Running %s', cmd)

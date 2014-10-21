@@ -47,7 +47,8 @@ class TestAtomicComposer(unittest.TestCase):
         fakehub = FakeHub()
         self.masher = AtomicComposer(fakehub)
         self.masher.consume(updates_msg)
-        call.assert_called_with(['touch', os.path.join(fakehub.config['touch_dir'], '19')])
+        call.assert_called_with(['touch', os.path.join(fakehub.config['touch_dir'],
+                                 '19', 'treecompose')])
 
 
 if __name__ == '__main__':
