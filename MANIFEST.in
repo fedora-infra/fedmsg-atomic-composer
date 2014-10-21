@@ -1,0 +1,2 @@
+include README.rst LICENSE config.py test.py
+graft fedmsg_atomic_composer systemd ansible rpm
