@@ -35,21 +35,21 @@ then triggers Atomic OSTree composes.
 
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
-install -D fedmsg.d/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
-install -D systemd/atomic-compose-rawhide.service %{buildroot}%{_sysconfdir}/systemd/system/atomic-compose-rawhide.service
+install -D -m644 fedmsg.d/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
+install -D -m644 systemd/atomic-compose-rawhide.service %{buildroot}%{_sysconfdir}/systemd/system/atomic-compose-rawhide.service
 
-install -D config.ini %{buildroot}/srv/fedora-atomic/rawhide/config.ini
+install -D -m644 config.ini %{buildroot}/srv/fedora-atomic/rawhide/config.ini
 
 
 %files
 %doc README.rst LICENSE ansible
 %{python_sitelib}/%{modname}/
 %{python_sitelib}/%{modname}*.egg-info
-%{_sysconfdir}/fedmsg.d/%{modname}.py*
+%config(noreplace) %{_sysconfdir}/fedmsg.d/%{modname}.py*
 %{_sysconfdir}/systemd/system/atomic-compose-rawhide.service
 /srv/fedora-atomic/rawhide/config.ini
 
 
 %changelog
-* Mon Oct 20 2014 Luke Macken <lmacken@redhat.com>
+* Mon Oct 20 2014 Luke Macken <lmacken@redhat.com> - 0.0.1-1
 - Initial package
