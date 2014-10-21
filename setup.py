@@ -9,7 +9,7 @@ setup(
     author_email='lmacken@redhat.com',
     url='https://github.com/lmacken/fedmsg-atomic-composer',
     install_requires=['fedmsg', 'mock'],
-    packages=[],
+    packages=['fedmsg_atomic_composer'],
     entry_points="""
     [moksha.consumer]
     fedmsg_atomic_composer = fedmsg_atomic_composer:AtomicComposer

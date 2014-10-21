@@ -1,2 +1,7 @@
 include README.rst LICENSE test.py
-graft fedmsg_atomic_composer systemd ansible rpm fedmsg.d
+graft fedmsg_atomic_composer
+graft systemd
+graft ansible
+graft rpm
+graft fedmsg.d
+global-exclude *.pyc *.swp

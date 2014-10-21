@@ -30,14 +30,14 @@ then triggers Atomic OSTree composes.
 
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
-mkdir %{buildroot}%{_sysconfdir}/fedmsg.d
-cp fedmsg.d/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
+install -D fedmsg.d/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
 
 
 %files
 %doc README.rst LICENSE
 %{python_sitelib}/%{modname}/
 %{python_sitelib}/%{modname}*.egg-info
+%{_sysconfdir}/fedmsg.d/%{modname}.py*
 
 
 %changelog
