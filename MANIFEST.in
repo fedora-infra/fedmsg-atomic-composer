@@ -1,4 +1,4 @@
-include README.rst LICENSE test.py
+include README.rst LICENSE test.py config.ini
 graft fedmsg_atomic_composer
 graft systemd
 graft ansible
