@@ -48,6 +48,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         # inject summary into repodata
 
     def call(self, cmd, **kwargs):
+        self.log.info('Running %s', cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE, **kwargs)
         out, err = p.communicate()
