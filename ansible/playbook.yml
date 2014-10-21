@@ -7,7 +7,8 @@
       with_items:
         - fedmsg-hub
         - rpm-ostree-toolbox
-        - fedmsg-atomic-composer
+        - ostree
+        #- fedmsg-atomic-composer
 
     - file: path=/srv/fedora-atomic/output
             owner=root group=root mode=655 state=directory
