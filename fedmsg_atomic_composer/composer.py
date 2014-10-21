@@ -1,3 +1,4 @@
+import os
 import subprocess
 import fedmsg.consumers
 
@@ -27,6 +28,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         if 'rawhide' in topic:
             arch = body['msg']['arch']
             self.log.info('New rawhide %s compose ready', arch)
+            self.trigger_compose('rawhide')
         elif 'branched' in topic:
             arch = body['msg']['arch']
             branch = body['msg']['branch']
@@ -35,13 +37,16 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
             if log != 'done':
                 self.log.warn('Compose not done?')
                 return
+            self.trigger_compose(branch)
         elif 'updates' in topic:
             release = body['msg']['release']
             repo = body['msg']['repo']
             self.log.info('New %s %s compose ready', release, repo)
+            self.trigger_compose(release)
 
-        # Trigger the rpm-ostree taskrunner
-        self.call(['touch', self.config['touch_file']])
+    def trigger_compose(self, repo):
+        """Trigger the rpm-ostree taskrunner"""
+        self.call(['touch', os.path.join(self.config['touch_dir'], repo)])
 
     def call(self, cmd, **kwargs):
         self.log.info('Running %s', cmd)
