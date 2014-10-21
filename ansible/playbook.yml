@@ -18,7 +18,9 @@
     - file: path=/srv/inbox
             owner=root group=root mode=655 state=directory
 
-    - service: name=atomic-compose-rawhide state=running
-
     - git: repo=https://git.fedorahosted.org/git/fedora-atomic.git
            dest=/srv/fedora-atomic/rawhide/fedora-atomic
+
+    - service: name=atomic-compose-rawhide state=running
+
+    - service: name=fedmsg-hub state=running
