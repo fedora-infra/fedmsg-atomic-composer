@@ -1,3 +1,5 @@
+%global modname fedmsg_atomic_composer
+
 Name:           fedmsg-atomic-composer
 Version:        0.0.1
 Release:        1%{?dist}
@@ -28,12 +30,14 @@ then triggers Atomic OSTree composes.
 
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
+mkdir %{buildroot}%{_sysconfdir}/fedmsg.d
+cp fedmsg.d/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
 
 
 %files
 %doc README.rst LICENSE
-%{python_sitelib}/fedmsg_atomic_composer/
-%{python_sitelib}/fedmsg_atomic_composer*.egg-info
+%{python_sitelib}/%{modname}/
+%{python_sitelib}/%{modname}*.egg-info
 
 
 %changelog
