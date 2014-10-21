@@ -43,10 +43,6 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         # Trigger the rpm-ostree taskrunner
         self.call(['touch', self.config['touch_file']])
 
-        # ostree compose
-        # extract summary
-        # inject summary into repodata
-
     def call(self, cmd, **kwargs):
         self.log.info('Running %s', cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
@@ -54,6 +50,13 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         out, err = p.communicate()
         return out, err, p.returncode
 
-    def output_changed(self, path, mask):
-        self.log.info('event %s on %s',
-                      ', '.join(inotify.humanReadableMask(mask)), path)
+    def output_changed(self, watch, path, mask):
+        self.log.info('Directory modified: %s', path)
+
+        # extract summary
+        # inject summary into repodata
+
+        #if path.endswith('updates-testing'):
+        #elif path.endswith('rawhide'):
+        #elif path.endswith('branched'):
+        #else:
