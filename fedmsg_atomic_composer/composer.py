@@ -1,14 +1,18 @@
 import subprocess
 import fedmsg.consumers
 
-class OSTreeComposer(fedmsg.consumers.FedmsgConsumer):
+from twisted.internet import inotify
+from twisted.python import filepath
+
+
+class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
     topic = ['org.fedoraproject.prod.bodhi.updates.fedora.sync',
              'org.fedoraproject.prod.compose.branched.rsync.complete',
              'org.fedoraproject.prod.compose.rawhide.rsync.complete']
     config_key = 'ostreecomposer'
 
     def __init__(self, hub, *args, **kw):
-        super(OSTreeComposer, self).__init__(hub, *args, **kw)
+        super(AtomicComposer, self).__init__(hub, *args, **kw)
         self.config = hub.config
 
     def consume(self, msg):

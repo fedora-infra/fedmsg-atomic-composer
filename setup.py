@@ -1,10 +1,10 @@
 from setuptools import setup
 
 setup(
-    name='ostreecomposer',
+    name='fedmsg_atomic_composer',
     version='0.0.1',
     license='GPLv3',
-    description='Composes OSTrees when Fedora repositories are updated',
+    description='Composes Atomic rpm-ostrees when Fedora repositories are updated',
     author='Luke Macken',
     author_email='lmacken@redhat.com',
     url='',
@@ -12,6 +12,6 @@ setup(
     packages=[],
     entry_points="""
     [moksha.consumer]
-    ostreecomposer = ostreecomposer:OSTreeComposer
+    fedmsg_atomic_composer = fedmsg_atomic_composer:AtomicComposer
     """,
 )

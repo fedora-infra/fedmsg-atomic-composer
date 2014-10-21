@@ -2,7 +2,7 @@
 import mock
 import unittest
 
-from ostreecomposer import OSTreeComposer
+from fedmsg_atomic_composer import AtomicComposer
 
 class FakeHub(object):
     def __init__(self):
@@ -32,18 +32,18 @@ updates_msg = {
 }
 
 
-class TestOSTreeComposer(unittest.TestCase):
+class TestAtomicComposer(unittest.TestCase):
 
     def setUp(self):
-        self.composer = OSTreeComposer(FakeHub())
+        self.composer = AtomicComposer(FakeHub())
 
     def tearDown(self):
         pass
 
-    @mock.patch('ostreecomposer.OSTreeComposer.call')
+    @mock.patch('ostreecomposer.AtomicComposer.call')
     def test_updates(self, call):
         fakehub = FakeHub()
-        self.masher = OSTreeComposer(fakehub)
+        self.masher = AtomicComposer(fakehub)
         self.masher.consume(updates_msg)
         call.assert_called_with(['touch', fakehub.config['touch_file']])
 
