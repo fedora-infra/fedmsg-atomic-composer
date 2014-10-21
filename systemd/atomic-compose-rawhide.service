@@ -1,0 +1,8 @@
+[Unit]
+
+[Service]
+WorkingDirectory=/srv/fedora-atomic/rawhide
+ExecStart=/usr/bin/rpm-ostree-toolbox taskrunner /srv/inbox
+
+[Install]
+WantedBy=multi-user.target
