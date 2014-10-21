@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import os
 import mock
 import unittest
 
@@ -10,7 +11,7 @@ class FakeHub(object):
             'topic_prefix': 'org.fedoraproject',
             'environment': 'dev',
             'releng_fedmsg_certname': None,
-            'touch_file': '/tmp/treecompose',
+            'touch_dir': '/tmp/treecompose',
             'watch_dir': '/srv/fedora-atomic/output',
         }
 
@@ -46,7 +47,7 @@ class TestAtomicComposer(unittest.TestCase):
         fakehub = FakeHub()
         self.masher = AtomicComposer(fakehub)
         self.masher.consume(updates_msg)
-        call.assert_called_with(['touch', fakehub.config['touch_file']])
+        call.assert_called_with(['touch', os.path.join(fakehub.config['touch_dir'], '19')])
 
 
 if __name__ == '__main__':
