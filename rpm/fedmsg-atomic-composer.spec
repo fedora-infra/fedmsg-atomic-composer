@@ -8,6 +8,7 @@ Summary:        Composes atomic trees when Fedora repositories are updated
 License:        GPLv3
 URL:            https://github.com/lmacken/fedmsg-atomic-composer
 Source0:        %{name}-%{version}.tar.bz2
+BuildArch:      noarch
 
 BuildRequires:  python-devel
 BuildRequires:  python-mock
@@ -31,13 +32,15 @@ then triggers Atomic OSTree composes.
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
 install -D fedmsg.d/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
+install -D systemd/atomic-compose-rawhide.service %{buildroot}%{_sysconfdir}/systemd/system/atomic-compose-rawhide.service
 
 
 %files
-%doc README.rst LICENSE
+%doc README.rst LICENSE ansible
 %{python_sitelib}/%{modname}/
 %{python_sitelib}/%{modname}*.egg-info
 %{_sysconfdir}/fedmsg.d/%{modname}.py*
+%{_sysconfdir}/systemd/system/atomic-compose-rawhide.service
 
 
 %changelog
