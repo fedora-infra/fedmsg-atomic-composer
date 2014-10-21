@@ -2,11 +2,12 @@
   sudo: yes
 
   tasks:
+
     - yum: name={{ item }} state=present
       with_items:
         - fedmsg-hub
         - rpm-ostree-toolbox
-        #- fedmsg-atomic-composer
+        - fedmsg-atomic-composer
 
     - file: path=/srv/fedora-atomic/output
             owner=root group=root mode=655 state=directory
