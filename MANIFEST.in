@@ -4,4 +4,5 @@ graft systemd
 graft ansible
 graft rpm
 graft fedmsg.d
+graft config
 global-exclude *.pyc *.swp
