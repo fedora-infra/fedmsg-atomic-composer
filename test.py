@@ -41,7 +41,7 @@ class TestAtomicComposer(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @mock.patch('ostreecomposer.AtomicComposer.call')
+    @mock.patch('fedmsg_atomic_composer.AtomicComposer.call')
     def test_updates(self, call):
         fakehub = FakeHub()
         self.masher = AtomicComposer(fakehub)
