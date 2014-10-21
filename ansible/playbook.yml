@@ -12,8 +12,11 @@
     - file: path=/srv/fedora-atomic/output
             owner=root group=root mode=655 state=directory
 
-    - file: path=/srv/fedora-atomic/rawhide/tasks/treecompose
+    - file: path=/srv/fedora-atomic/{{ item }}/tasks/treecompose
             owner=root group=root mode=655 state=directory
+      with_items:
+        - rawhide
+        - f21
 
     - file: path=/srv/inbox
             owner=root group=root mode=655 state=directory
