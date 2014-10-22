@@ -39,4 +39,4 @@
         - rawhide
         - f21
 
-    - service: name=fedmsg-hub state=running
+    - service: name=fedmsg-hub state=started
