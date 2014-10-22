@@ -17,3 +17,18 @@ Deploy
 .. code-block:: bash
 
    ansible-playbook --ask-sudo-pass ansible/playbook.yml
+
+Monitor
+-------
+
+.. code-block:: bash
+
+   journalctl -f -u fedmsg-hub -u atomic-compose\*
+
+
+Triggering locally
+------------------
+
+.. code-block:: bash
+
+   fedmsg-logger --modname 'bodhi' --topic 'updates.fedora.sync' --json-input --message='{"release": "21", "repo": "updates"}'
