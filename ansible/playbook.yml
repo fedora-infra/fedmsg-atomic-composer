@@ -27,10 +27,12 @@
 
     - git: repo=https://git.fedorahosted.org/git/fedora-atomic.git
            dest=/srv/fedora-atomic/rawhide/fedora-atomic
+           update=no
 
     - git: repo=https://git.fedorahosted.org/git/fedora-atomic.git
            dest=/srv/fedora-atomic/f21/fedora-atomic
            version=f21
+           update=no
 
     - service: name=atomic-compose-{{ item }} enabled=yes state=started
       with_items:
