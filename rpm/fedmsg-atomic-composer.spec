@@ -16,6 +16,9 @@ BuildRequires:  python-mock
 Requires:       fedmsg-hub
 Requires:       rpm-ostree-toolbox
 
+# Version requirement for specifying a list of topics
+Requires:       python-moksha-hub >= 1.4.4
+
 %description
 This is a Fedmsg consumer that listens for when the Fedora
 updates/rawhide/branched repositories sync with the master mirror, and
