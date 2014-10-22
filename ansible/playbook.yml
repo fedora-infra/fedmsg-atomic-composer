@@ -32,7 +32,7 @@
            dest=/srv/fedora-atomic/f21/fedora-atomic
            version=f21
 
-    - service: name=atomic-compose-{{ item }} state=running
+    - service: name=atomic-compose-{{ item }} enabled=yes state=started
       with_items:
         - rawhide
         - f21
