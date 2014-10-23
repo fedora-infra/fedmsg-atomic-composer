@@ -11,4 +11,6 @@ config = dict(
              'org.fedoraproject.dev.compose.rawhide.rsync.complete'],
     touch_dir='/srv/inbox/',
     watch_dir='/srv/fedora-atomic/output',
+    production_repos='localhost:/srv/production/',
+    local_repos='/srv/fedora-atomic/',
 )

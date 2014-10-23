@@ -55,6 +55,18 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         out, err = p.communicate()
         return out, err, p.returncode
 
+    def sync_in(self, repo):
+        """Sync the canonical ostree locally"""
+        out = self.call(['rsync', '-ave', 'ssh',
+            os.path.join(self.config['production_repos'], repo, 'repo'),
+            os.path.join(self.config['local_repos'], repo, 'repo')])
+
+    def sync_out(self, repo):
+        """Sync the canonical ostree to production"""
+        self.call(['rsync', '-ave', 'ssh',
+                   os.path.join(self.config['watch_dir'], repo, 'repo'),
+                   os.path.join(self.config['production_repos'], repo, 'repo')])
+
     def output_changed(self, watch, path, mask):
         self.log.info('Directory modified: %s', path)
 
