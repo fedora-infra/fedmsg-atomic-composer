@@ -1,5 +1,6 @@
 import os
 import json
+import shutil
 import librepo
 import iniparse
 import subprocess
@@ -147,9 +148,10 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
 
                 dest = os.path.join(self.config['output_dir'], repo,
                                     yum_repo + '.repodata')
+                if os.path.exists(dest):
+                    shutil.rmtree(dest)
+                os.mkdir(dest)
                 handle.destdir = dest
-                if not os.path.exists(dest):
-                    os.mkdir(dest)
 
                 result = librepo.Result()
                 try:
