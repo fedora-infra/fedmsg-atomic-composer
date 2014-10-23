@@ -13,7 +13,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         self.config = hub.config
         self.topic = self.config['topic']
         super(AtomicComposer, self).__init__(hub, *args, **kw)
-        self.watch_dir = self.config['watch_dir']
+        self.output_dir = self.config['output_dir']
         self.notifier = inotify.INotify()
         self.notifier.startReading()
 
@@ -48,15 +48,15 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
     def trigger_compose(self, repo):
         """Trigger the rpm-ostree-toolbox taskrunner treecompose"""
         # Create the directory ourselves so ostree will inherit our ownership
-        repo_path = os.path.join(self.config['watch_dir'], repo)
+        repo_path = os.path.join(self.config['output_dir'], repo)
         if not os.path.exists(repo_path):
-            os.makedirs(os.path.join(self.config['watch_dir'], repo))
+            os.makedirs(os.path.join(self.config['output_dir'], repo))
 
         task = os.path.join(self.config['touch_dir'], repo, 'treecompose')
         self.log.info('Touching %s', task)
         self.call(['touch', task])
         self.notifier.watch(filepath.FilePath(task),
-                            callbacks=[self.output_changed])
+                            callbacks=[self.compose_complete])
 
     def call(self, cmd, **kwargs):
         self.log.info('Running %s', cmd)
@@ -76,24 +76,22 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
     def sync_out(self, repo):
         """Sync the output to production"""
         self.call(['rsync', '-ave', 'ssh',
-                   os.path.join(self.config['watch_dir'], repo, 'repo'),
+                   os.path.join(self.config['output_dir'], repo, 'repo'),
                    os.path.join(self.config['production_repos'], repo, 'repo')])
 
-    def output_changed(self, watch, path, mask):
-        """Called when something in the output directory changes.
-
-        If we've never seen the 
-        """
+    def compose_complete(self, watch, path, mask):
+        """Called when our tree compose has completed"""
         self.log.info('%s %s', inotify.humanReadableMask(mask), path)
         if not path.exists():
             self.log.info('%s complete!', path)
             self.notifier.ignore(path)
             repo = path.dirname().split('/')[-1]
             self.update_ostree_summary(repo)
+            self.sync_out(repo)
         else:
             self.log.info('%s already exists, and was modified?', path)
 
     def update_ostree_summary(self, repo):
         self.log.info('Updating the ostree summary for %s', repo)
-        repo_path = os.path.join(self.config['watch_dir'], repo, 'repo')
+        repo_path = os.path.join(self.config['output_dir'], repo, 'repo')
         self.call(['ostree', '--repo=' + repo_path, 'summary', '--update'])

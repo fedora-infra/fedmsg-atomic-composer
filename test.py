@@ -14,7 +14,7 @@ class FakeHub(object):
             'environment': 'dev',
             'releng_fedmsg_certname': None,
             'touch_dir': tempfile.mkdtemp(),
-            'watch_dir': tempfile.mkdtemp(),
+            'output_dir': tempfile.mkdtemp(),
             'production_repos': tempfile.mkdtemp(),
             'local_repos': tempfile.mkdtemp(),
             'topic': ['org.fedoraproject.test'],
@@ -49,7 +49,7 @@ class TestAtomicComposer(unittest.TestCase):
 
     @mock.patch('fedmsg_atomic_composer.AtomicComposer.sync_in')
     @mock.patch('fedmsg_atomic_composer.AtomicComposer.sync_out')
-    @mock.patch('fedmsg_atomic_composer.AtomicComposer.output_changed')
+    @mock.patch('fedmsg_atomic_composer.AtomicComposer.compose_complete')
     def test_updates(self, *args):
         fakehub = FakeHub()
         touch_dir = fakehub.config['touch_dir']
@@ -59,7 +59,7 @@ class TestAtomicComposer(unittest.TestCase):
         #call.assert_called_with(['touch', os.path.join(fakehub.config['touch_dir'],
         #                         '19', 'treecompose')])
         shutil.rmtree(fakehub.config['touch_dir'])
-        shutil.rmtree(fakehub.config['watch_dir'])
+        shutil.rmtree(fakehub.config['output_dir'])
         shutil.rmtree(fakehub.config['production_repos'])
         shutil.rmtree(fakehub.config['local_repos'])
 
