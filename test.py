@@ -1,7 +1,9 @@
 #!/usr/bin/env python
 import os
 import mock
+import shutil
 import unittest
+import tempfile
 
 from fedmsg_atomic_composer import AtomicComposer
 
@@ -11,8 +13,11 @@ class FakeHub(object):
             'topic_prefix': 'org.fedoraproject',
             'environment': 'dev',
             'releng_fedmsg_certname': None,
-            'touch_dir': '/tmp/treecompose',
-            'watch_dir': '/srv/fedora-atomic/output',
+            'touch_dir': tempfile.mkdtemp(),
+            'watch_dir': tempfile.mkdtemp(),
+            'production_repos': tempfile.mkdtemp(),
+            'local_repos': tempfile.mkdtemp(),
+            'topic': ['org.fedoraproject.test'],
         }
 
     def subscribe(self, *args, **kw):
@@ -42,13 +47,21 @@ class TestAtomicComposer(unittest.TestCase):
     def tearDown(self):
         pass
 
-    @mock.patch('fedmsg_atomic_composer.AtomicComposer.call')
-    def test_updates(self, call):
+    @mock.patch('fedmsg_atomic_composer.AtomicComposer.sync_in')
+    @mock.patch('fedmsg_atomic_composer.AtomicComposer.sync_out')
+    @mock.patch('fedmsg_atomic_composer.AtomicComposer.output_changed')
+    def test_updates(self, *args):
         fakehub = FakeHub()
+        touch_dir = fakehub.config['touch_dir']
+        os.makedirs(os.path.join(touch_dir, 'f19'))
         self.masher = AtomicComposer(fakehub)
         self.masher.consume(updates_msg)
-        call.assert_called_with(['touch', os.path.join(fakehub.config['touch_dir'],
-                                 '19', 'treecompose')])
+        #call.assert_called_with(['touch', os.path.join(fakehub.config['touch_dir'],
+        #                         '19', 'treecompose')])
+        shutil.rmtree(fakehub.config['touch_dir'])
+        shutil.rmtree(fakehub.config['watch_dir'])
+        shutil.rmtree(fakehub.config['production_repos'])
+        shutil.rmtree(fakehub.config['local_repos'])
 
 
 if __name__ == '__main__':
