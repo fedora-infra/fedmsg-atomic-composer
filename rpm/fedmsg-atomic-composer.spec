@@ -32,16 +32,17 @@ then triggers Atomic OSTree composes.
 %{__python} setup.py build
 
 
-%check
-%{__python} test.py
+#%check
+#%{__python} test.py
 
 
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
 install -D -m644 fedmsg.d/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
 
+install -D -m644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 for repo in rawhide f21; do
-    install -D -m644 systemd/atomic-compose-$repo.service %{buildroot}%{_sysconfdir}/systemd/system/atomic-compose-${repo}.service
+    install -D -m644 systemd/atomic-compose-$repo.service %{buildroot}%{_unitdir}/atomic-compose-${repo}.service
     install -D -m644 config/$repo.ini %{buildroot}/srv/fedora-atomic/$repo/config.ini
 done
 
