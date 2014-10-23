@@ -69,15 +69,17 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
 
     def sync_in(self, repo):
         """Sync the canonical ostree locally"""
-        out = self.call(['rsync', '-ave', 'ssh',
-            os.path.join(self.config['production_repos'], repo, 'repo'),
-            os.path.join(self.config['local_repos'], repo, 'repo')])
+        out, err, returncode = self.call(['rsync', '-ave', 'ssh',
+            os.path.join(self.config['production_repos'], repo),
+            os.path.join(self.config['output_dir'])])
+        self.log.info(out)
 
     def sync_out(self, repo):
         """Sync the output to production"""
-        self.call(['rsync', '-ave', 'ssh',
-                   os.path.join(self.config['output_dir'], repo, 'repo'),
-                   os.path.join(self.config['production_repos'], repo, 'repo')])
+        out, err, returncode = self.call(['rsync', '-ave', 'ssh', repo,
+                                         self.config['production_repos']],
+                                         cwd=self.config['output_dir'])
+        self.log.info(out)
 
     def compose_complete(self, watch, path, mask):
         """Called when our tree compose has completed"""
