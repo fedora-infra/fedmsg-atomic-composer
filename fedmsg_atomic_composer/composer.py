@@ -74,7 +74,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
             os.path.join(self.config['local_repos'], repo, 'repo')])
 
     def sync_out(self, repo):
-        """Sync the canonical ostree to production"""
+        """Sync the output to production"""
         self.call(['rsync', '-ave', 'ssh',
                    os.path.join(self.config['watch_dir'], repo, 'repo'),
                    os.path.join(self.config['production_repos'], repo, 'repo')])
