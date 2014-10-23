@@ -16,18 +16,17 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         self.watch_dir = self.config['watch_dir']
         self.notifier = inotify.INotify()
         self.notifier.startReading()
-        self.notifier.watch(filepath.FilePath(self.config['watch_dir']),
-                            callbacks=[self.output_changed])
 
     def consume(self, msg):
         self.log.debug(msg)
         body = msg['body']
         topic = body['topic']
+        repo = None
 
         if 'rawhide' in topic:
             arch = body['msg']['arch']
             self.log.info('New rawhide %s compose ready', arch)
-            self.trigger_compose('rawhide')
+            repo = 'rawhide'
         elif 'branched' in topic:
             arch = body['msg']['arch']
             branch = body['msg']['branch']
@@ -36,23 +35,36 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
             if log != 'done':
                 self.log.warn('Compose not done?')
                 return
-            self.trigger_compose(branch)
-        elif 'updates' in topic:
-            release = body['msg']['release']
-            repo = body['msg']['repo']
-            self.log.info('New %s %s compose ready', release, repo)
-            self.trigger_compose(release)
+            repo = branch
+        elif 'updates.fedora' in topic:
+            self.log.info('New %(release)s %(repo)s compose ready', body['msg'])
+            repo = 'f' + body['msg']['release']
+        else:
+            self.log.warn('Unknown topic: %s', topic)
+
+        self.sync_in(repo)
+        self.trigger_compose(repo)
 
     def trigger_compose(self, repo):
         """Trigger the rpm-ostree-toolbox taskrunner treecompose"""
-        self.call(['touch', os.path.join(self.config['touch_dir'],
-                   repo, 'treecompose')])
+        # Create the directory ourselves so ostree will inherit our ownership
+        repo_path = os.path.join(self.config['watch_dir'], repo)
+        if not os.path.exists(repo_path):
+            os.makedirs(os.path.join(self.config['watch_dir'], repo))
+
+        task = os.path.join(self.config['touch_dir'], repo, 'treecompose')
+        self.log.info('Touching %s', task)
+        self.call(['touch', task])
+        self.notifier.watch(filepath.FilePath(task),
+                            callbacks=[self.output_changed])
 
     def call(self, cmd, **kwargs):
         self.log.info('Running %s', cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE, **kwargs)
         out, err = p.communicate()
+        if err:
+            self.log.error(err)
         return out, err, p.returncode
 
     def sync_in(self, repo):
