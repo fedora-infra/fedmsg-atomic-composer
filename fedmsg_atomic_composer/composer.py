@@ -1,4 +1,5 @@
 import os
+import json
 import iniparse
 import subprocess
 import fedmsg.consumers
@@ -93,6 +94,21 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         self.log.info('Updating the ostree summary for %s', repo)
         repo_path = os.path.join(self.config['output_dir'], repo, 'repo')
         self.call(['ostree', '--repo=' + repo_path, 'summary', '--update'])
+
+    def extract_treefile(self, repo):
+        """Extract and decode the treefile JSON from the composed tree"""
+        config = self.parse_config(repo)
+        ref = config.get('DEFAULT', 'ref')
+        repo_path = os.path.join(self.config['output_dir'], repo, 'repo')
+        out, err, code = self.call(['ostree', '--repo=' + repo_path, 'cat', ref,
+                                    '/usr/share/rpm-ostree/treefile.json'])
+        if err:
+            self.log.error(err)
+        if code != 0:
+            self.log.error(out)
+            return
+
+        return json.loads(out)
 
     def parse_config(self, repo):
         """Parse the config.ini for a given repo"""
