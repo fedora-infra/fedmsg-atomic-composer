@@ -23,7 +23,7 @@ Monitor
 
 .. code-block:: bash
 
-   journalctl -f -u fedmsg-hub -u atomic-compose\*
+   journalctl -f -u fedmsg-atomic-composer -u atomic-compose\*
 
 
 Triggering locally
