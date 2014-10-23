@@ -51,8 +51,9 @@ done
 %{python_sitelib}/%{modname}/
 %{python_sitelib}/%{modname}*.egg-info
 %config(noreplace) %{_sysconfdir}/fedmsg.d/%{modname}.py*
-%{_sysconfdir}/systemd/system/atomic-compose-*.service
-%attr(755, fedmsg, fedmsg) /srv/fedora-atomic/
+%{_unitdir}/atomic-compose-*.service
+%{_unitdir}/%{name}.service
+%attr(755, composer, composer) /srv/fedora-atomic/
 
 
 %changelog

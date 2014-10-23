@@ -1,0 +1,11 @@
+[Unit]
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/fedmsg-hub
+Type=simple
+User=composer
+Group=composer
+
+[Install]
+WantedBy=multi-user.target
