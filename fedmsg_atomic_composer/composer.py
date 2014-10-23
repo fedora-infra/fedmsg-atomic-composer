@@ -87,9 +87,10 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
             self.log.info('%s complete!', path)
             self.notifier.ignore(path)
             repo = path.dirname().split('/')[-1]
-            self.update_ostree_summary(repo)
+            summary = self.update_ostree_summary(repo)
             config = self.parse_config(repo)
-            self.download_repodata(repo, config)
+            repodata = self.download_repodata(repo, config)
+            self.inject_summary_into_repodata(summary, repodata)
             self.sync_out(repo)
         else:
             self.log.info('%s already exists, and was modified?', path)
@@ -98,6 +99,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         self.log.info('Updating the ostree summary for %s', repo)
         repo_path = os.path.join(self.config['output_dir'], repo, 'repo')
         self.call(['ostree', '--repo=' + repo_path, 'summary', '--update'])
+        return os.path.join(repo_path, 'summary')
 
     def extract_treefile(self, repo, config):
         """Extract and decode the treefile JSON from the composed tree"""
@@ -158,7 +160,16 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
                     self.log.info('Downloading repo metadata from %s', url)
                     handle.perform(result)
                     self.log.info('Repo metadata saved to %s', dest)
+                    self.log.info(result)
+                    return dest
                 except:
                     self.log.exception('Unable to download repodata')
             else:
                 self.log.error('Unable to find repo: %s', repo_file)
+
+    def inject_summary_into_repodata(self, summary, repodata):
+        """Inject the ostree summary file into the yum repodata"""
+        self.log.info('Injecting ostree summary into yum repodata')
+        out, err, code = self.call(['modifyrepo', summary,
+                                    os.path.join(repodata, 'repodata')])
+        self.log.info(out)
