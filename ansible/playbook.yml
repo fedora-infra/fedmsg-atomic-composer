@@ -58,3 +58,10 @@
       with_items:
        - rawhide
        - f21
+
+    - file: src=/srv/fedora-atomic/output/{{ item }}/repo
+            dest=/srv/fedora-atomic/{{ item }}/repo
+            owner=fedmsg group=fedmsg state=link
+      with_items:
+       - rawhide
+       - f21
