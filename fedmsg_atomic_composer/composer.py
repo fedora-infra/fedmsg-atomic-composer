@@ -80,12 +80,20 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
                    os.path.join(self.config['production_repos'], repo, 'repo')])
 
     def output_changed(self, watch, path, mask):
-        self.log.info('Directory modified: %s', path)
+        """Called when something in the output directory changes.
 
-        # extract summary
-        # inject summary into repodata
+        If we've never seen the 
+        """
+        self.log.info('%s %s', inotify.humanReadableMask(mask), path)
+        if not path.exists():
+            self.log.info('%s complete!', path)
+            self.notifier.ignore(path)
+            repo = path.dirname().split('/')[-1]
+            self.update_ostree_summary(repo)
+        else:
+            self.log.info('%s already exists, and was modified?', path)
 
-        #if path.endswith('updates-testing'):
-        #elif path.endswith('rawhide'):
-        #elif path.endswith('branched'):
-        #else:
+    def update_ostree_summary(self, repo):
+        self.log.info('Updating the ostree summary for %s', repo)
+        repo_path = os.path.join(self.config['watch_dir'], repo, 'repo')
+        self.call(['ostree', '--repo=' + repo_path, 'summary', '--update'])
