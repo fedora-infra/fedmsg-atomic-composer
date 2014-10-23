@@ -1,5 +1,6 @@
 import os
 import json
+import librepo
 import iniparse
 import subprocess
 import fedmsg.consumers
@@ -86,6 +87,8 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
             self.notifier.ignore(path)
             repo = path.dirname().split('/')[-1]
             self.update_ostree_summary(repo)
+            config = self.parse_config(repo)
+            self.download_repodata(repo, config)
             self.sync_out(repo)
         else:
             self.log.info('%s already exists, and was modified?', path)
@@ -95,9 +98,8 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         repo_path = os.path.join(self.config['output_dir'], repo, 'repo')
         self.call(['ostree', '--repo=' + repo_path, 'summary', '--update'])
 
-    def extract_treefile(self, repo):
+    def extract_treefile(self, repo, config):
         """Extract and decode the treefile JSON from the composed tree"""
-        config = self.parse_config(repo)
         ref = config.get('DEFAULT', 'ref')
         repo_path = os.path.join(self.config['output_dir'], repo, 'repo')
         out, err, code = self.call(['ostree', '--repo=' + repo_path, 'cat', ref,
@@ -107,7 +109,6 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         if code != 0:
             self.log.error(out)
             return
-
         return json.loads(out)
 
     def parse_config(self, repo):
@@ -115,3 +116,47 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         config = iniparse.ConfigParser()
         config.read(os.path.join(self.config['local_repos'], repo, 'config.ini'))
         return config
+
+    def download_repodata(self, repo, config):
+        """
+        Determine the repositories used to compose this tree, and sync the
+        repodata locally. We do this by extracting the JSON treefile from the
+        composed ostree, and for each repo listed parsing the URL from the
+        fedora-atomic.git/$REPO.repo file.
+        """
+        arch = config.get('DEFAULT', 'arch')
+        treefile = self.extract_treefile(repo, config)
+        for yum_repo in treefile['repos']:
+            handle = librepo.Handle()
+            handle.repotype = librepo.LR_YUMREPO
+
+            repo_file = os.path.join(self.config['local_repos'], repo,
+                                     'fedora-atomic', yum_repo + '.repo')
+            if os.path.exists(repo_file):
+                self.log.info('Found yum repo: %s', repo_file)
+                config = iniparse.ConfigParser()
+                config.read(repo_file)
+                try:
+                    url = config.get(yum_repo, 'baseurl')
+                    url = url.replace('$basearch', arch)
+                    handle.urls = [url]
+                except iniparse.NoOptionError:
+                    url = config.get(yum_repo, 'mirrorlist')
+                    url = url.replace('$basearch', arch)
+                    handle.mirrorlist = url
+
+                dest = os.path.join(self.config['output_dir'], repo,
+                                    yum_repo + '.repodata')
+                handle.destdir = dest
+                if not os.path.exists(dest):
+                    os.mkdir(dest)
+
+                result = librepo.Result()
+                try:
+                    self.log.info('Downloading repo metadata from %s', url)
+                    handle.perform(result)
+                    self.log.info('Repo metadata saved to %s', dest)
+                except:
+                    self.log.exception('Unable to download repodata')
+            else:
+                self.log.error('Unable to find repo: %s', repo_file)

@@ -15,6 +15,7 @@ BuildRequires:  python-mock
 
 Requires:       fedmsg-hub
 Requires:       rpm-ostree-toolbox
+Requires:       librepo
 
 # Version requirement for specifying a list of topics
 #Requires:       python-moksha-hub >= 1.4.4
