@@ -1,4 +1,5 @@
 import os
+import iniparse
 import subprocess
 import fedmsg.consumers
 
@@ -92,3 +93,9 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         self.log.info('Updating the ostree summary for %s', repo)
         repo_path = os.path.join(self.config['output_dir'], repo, 'repo')
         self.call(['ostree', '--repo=' + repo_path, 'summary', '--update'])
+
+    def parse_config(self, repo):
+        """Parse the config.ini for a given repo"""
+        config = iniparse.ConfigParser()
+        config.read(os.path.join(self.config['local_repos'], repo, 'config.ini'))
+        return config
