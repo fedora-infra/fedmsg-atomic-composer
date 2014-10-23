@@ -47,11 +47,6 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
 
     def trigger_compose(self, repo):
         """Trigger the rpm-ostree-toolbox taskrunner treecompose"""
-        # Create the directory ourselves so ostree will inherit our ownership
-        repo_path = os.path.join(self.config['output_dir'], repo)
-        if not os.path.exists(repo_path):
-            os.makedirs(os.path.join(self.config['output_dir'], repo))
-
         task = os.path.join(self.config['touch_dir'], repo, 'treecompose')
         self.log.info('Touching %s', task)
         self.call(['touch', task])
