@@ -6,7 +6,7 @@ Release:        1%{?dist}
 Summary:        Composes atomic trees when Fedora repositories are updated
 
 License:        GPLv3
-URL:            https://github.com/lmacken/fedmsg-atomic-composer
+URL:            https://github.com/fedora-infra/fedmsg-atomic-composer
 Source0:        %{name}-%{version}.tar.bz2
 BuildArch:      noarch
 

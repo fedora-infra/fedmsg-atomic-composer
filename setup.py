@@ -7,7 +7,7 @@ setup(
     description='Composes Atomic rpm-ostrees when Fedora repositories are updated',
     author='Luke Macken',
     author_email='lmacken@redhat.com',
-    url='https://github.com/lmacken/fedmsg-atomic-composer',
+    url='https://github.com/fedora-infra/fedmsg-atomic-composer',
     install_requires=['fedmsg', 'mock'],
     packages=['fedmsg_atomic_composer'],
     entry_points="""
