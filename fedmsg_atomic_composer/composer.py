@@ -11,13 +11,11 @@ from twisted.python import filepath
 
 
 class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
-    config_key = 'fedmsg_atomic_composer'
 
     def __init__(self, hub, *args, **kw):
-        self.config = hub.config
-        self.topic = self.config['topic']
+        for key, item in hub.config.items():
+            setattr(self, key, item)
         super(AtomicComposer, self).__init__(hub, *args, **kw)
-        self.output_dir = self.config['output_dir']
         self.notifier = inotify.INotify()
         self.notifier.startReading()
 
@@ -51,7 +49,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
 
     def trigger_compose(self, repo):
         """Trigger the rpm-ostree-toolbox taskrunner treecompose"""
-        task = os.path.join(self.config['touch_dir'], repo, 'treecompose')
+        task = os.path.join(self.touch_dir, repo, 'treecompose')
         self.log.info('Touching %s', task)
         self.call(['touch', task])
         self.notifier.watch(filepath.FilePath(task),
@@ -68,16 +66,19 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
 
     def sync_in(self, repo):
         """Sync the canonical ostree locally"""
-        out, err, returncode = self.call(['rsync', '-ave', 'ssh',
-            os.path.join(self.config['production_repos'], repo),
-            os.path.join(self.config['output_dir'])])
-        self.log.info(out)
+        prod = os.path.join(self.production_repos, repo)
+        if os.path.exists(prod):
+            out, err, returncode = self.call(['rsync', '-ave', 'ssh', prod,
+                                              os.path.join(self.output_dir)])
+            self.log.info(out)
+        else:
+            self.log.info('Production repo doesn\'t exist yet: %s', prod)
 
     def sync_out(self, repo):
         """Sync the output to production"""
         out, err, returncode = self.call(['rsync', '-ave', 'ssh', repo,
-                                         self.config['production_repos']],
-                                         cwd=self.config['output_dir'])
+                                         self.production_repos],
+                                         cwd=self.output_dir)
         self.log.info(out)
 
     def compose_complete(self, watch, path, mask):
@@ -97,14 +98,14 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
 
     def update_ostree_summary(self, repo):
         self.log.info('Updating the ostree summary for %s', repo)
-        repo_path = os.path.join(self.config['output_dir'], repo, 'repo')
+        repo_path = os.path.join(self.output_dir, repo, 'repo')
         self.call(['ostree', '--repo=' + repo_path, 'summary', '--update'])
         return os.path.join(repo_path, 'summary')
 
     def extract_treefile(self, repo, config):
         """Extract and decode the treefile JSON from the composed tree"""
         ref = config.get('DEFAULT', 'ref')
-        repo_path = os.path.join(self.config['output_dir'], repo, 'repo')
+        repo_path = os.path.join(self.output_dir, repo, 'repo')
         out, err, code = self.call(['ostree', '--repo=' + repo_path, 'cat', ref,
                                     '/usr/share/rpm-ostree/treefile.json'])
         if err:
@@ -117,7 +118,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
     def parse_config(self, repo):
         """Parse the config.ini for a given repo"""
         config = iniparse.ConfigParser()
-        config.read(os.path.join(self.config['local_repos'], repo, 'config.ini'))
+        config.read(os.path.join(self.local_repos, repo, 'config.ini'))
         return config
 
     def download_repodata(self, repo, config):
@@ -133,7 +134,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
             handle = librepo.Handle()
             handle.repotype = librepo.LR_YUMREPO
 
-            repo_file = os.path.join(self.config['local_repos'], repo,
+            repo_file = os.path.join(self.local_repos, repo,
                                      'fedora-atomic', yum_repo + '.repo')
             if os.path.exists(repo_file):
                 self.log.info('Found yum repo: %s', repo_file)
@@ -148,7 +149,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
                     url = url.replace('$basearch', arch)
                     handle.mirrorlist = url
 
-                dest = os.path.join(self.config['output_dir'], repo,
+                dest = os.path.join(self.output_dir, repo,
                                     yum_repo + '.repodata')
                 if os.path.exists(dest):
                     shutil.rmtree(dest)
