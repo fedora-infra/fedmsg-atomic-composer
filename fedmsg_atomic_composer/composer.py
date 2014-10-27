@@ -7,18 +7,31 @@ import iniparse
 import subprocess
 import fedmsg.consumers
 
+from zope.interface import implements
+
+from twisted.internet.interfaces import IReadDescriptor
 from twisted.internet import inotify
 from twisted.python import filepath
 
+from twisted.internet import reactor
+
+from systemd import journal
+
 
 class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
+    implements(IReadDescriptor)
 
     def __init__(self, hub, *args, **kw):
         for key, item in hub.config.items():
             setattr(self, key, item)
         super(AtomicComposer, self).__init__(hub, *args, **kw)
-        self.notifier = inotify.INotify()
-        self.notifier.startReading()
+
+        self.journal = journal.Reader()
+        for tree in self.trees:
+            self.journal.add_match(_SYSTEMD_UNIT='atomic-compose-%s.service' % tree)
+        self.journal.seek_tail()
+        self.journal.get_previous()
+        reactor.addReader(self)
 
     def consume(self, msg):
         self.log.debug(msg)
@@ -180,3 +193,25 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
             #os.unlink(md)
             #os.symlink(summary, md)
             #self.log.info('%s -> %s symlink created', summary, md)
+
+    def fileno(self):
+        return self.journal.fileno()
+
+    def logPrefix(self):
+        return self.__class__.__name__
+
+    def connectionLost(self, reason):
+        self.log.error('journal connection lost: %s', reason)
+        reactor.removeReader(self)
+        self.journal.close()
+        raise reason
+
+    def doRead(self):
+        """Called when data is available from the journal"""
+        if self.journal.process() != journal.APPEND:
+            return
+        for entry in self.journal:
+            if entry['MESSAGE'] == 'INFO:root:task treecompose exited successfully':
+                unit = entry['_SYSTEMD_UNIT']
+                repo = unit.replace('atomic-compose-', '').replace('.service', '')
+                reactor.callInThread(self.compose_complete, repo)

@@ -4,6 +4,7 @@
   tasks:
 
     - user: name=composer
+            groups="systemd-journal"
             generate_ssh_key=yes
       register: user
 
