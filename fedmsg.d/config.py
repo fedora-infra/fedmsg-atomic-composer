@@ -1,4 +1,5 @@
 config = dict(
+    trees=['rawhide', 'f21'],
     fedmsg_atomic_composer=True,
     config_key='fedmsg_atomic_composer',
     topic = ['org.fedoraproject.prod.bodhi.updates.fedora.sync',
