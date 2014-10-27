@@ -1,4 +1,5 @@
 import os
+import glob
 import json
 import shutil
 import librepo
@@ -168,9 +169,14 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
             else:
                 self.log.error('Unable to find repo: %s', repo_file)
 
-    def inject_summary_into_repodata(self, summary, repodata):
+    def inject_summary_into_repodata(self, summary, repo):
         """Inject the ostree summary file into the yum repodata"""
         self.log.info('Injecting ostree summary into yum repodata')
-        out, err, code = self.call(['modifyrepo', summary,
-                                    os.path.join(repodata, 'repodata')])
-        self.log.info(out)
+        repomd = glob.glob(os.path.join(self.output_dir, repo, 'repodata',
+                                        '*', 'repomd.xml'))
+        for md in repomd:
+            self.log.info('Found repodata: %s', md)
+            #repodata = os.path.dirname(md)
+            #os.unlink(md)
+            #os.symlink(summary, md)
+            #self.log.info('%s -> %s symlink created', summary, md)
