@@ -227,7 +227,10 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         if self.journal.process() != journal.APPEND:
             return
         for entry in self.journal:
-            if entry['MESSAGE'] == 'INFO:root:task treecompose exited successfully':
+            msg = entry['MESSAGE']
+            if msg == 'INFO:root:task treecompose exited successfully':
                 unit = entry['_SYSTEMD_UNIT']
                 repo = unit.replace('atomic-compose-', '').replace('.service', '')
                 reactor.callInThread(self.compose_complete, repo)
+            elif msg.startswith('INFO:root:task treecompose exited with error'):
+                self.log.error(msg)
