@@ -10,9 +10,6 @@ import fedmsg.consumers
 from zope.interface import implements
 
 from twisted.internet.interfaces import IReadDescriptor
-from twisted.internet import inotify
-from twisted.python import filepath
-
 from twisted.internet import reactor
 
 from systemd import journal
@@ -37,7 +34,8 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         # Monitor the output of our taskrunner services
         self.journal = journal.Reader()
         for tree in self.trees:
-            self.journal.add_match(_SYSTEMD_UNIT='atomic-compose-%s.service' % tree)
+            unit = 'atomic-compose-%s.service' % tree
+            self.journal.add_match(_SYSTEMD_UNIT=unit)
         self.journal.seek_tail()
         self.journal.get_previous()
         reactor.addReader(self)
@@ -71,7 +69,8 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
                 return
             repo = branch
         elif 'updates.fedora' in topic:
-            self.log.info('New %(release)s %(repo)s compose ready', body['msg'])
+            self.log.info('New %(release)s %(repo)s compose ready',
+                          body['msg'])
             repo = 'f' + body['msg']['release']
         else:
             self.log.warn('Unknown topic: %s', topic)
@@ -230,7 +229,8 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
             msg = entry['MESSAGE']
             if msg == 'INFO:root:task treecompose exited successfully':
                 unit = entry['_SYSTEMD_UNIT']
-                repo = unit.replace('atomic-compose-', '').replace('.service', '')
+                repo = unit.replace('atomic-compose-', '')\
+                           .replace('.service', '')
                 reactor.callInThread(self.compose_complete, repo)
             elif msg.startswith('INFO:root:task treecompose exited with error'):
                 self.log.error(msg)
