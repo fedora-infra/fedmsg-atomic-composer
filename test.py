@@ -10,6 +10,7 @@ from fedmsg_atomic_composer import AtomicComposer
 class FakeHub(object):
     def __init__(self):
         self.config = {
+            'config_key': 'fedmsg_atomic_composer',
             'topic_prefix': 'org.fedoraproject',
             'environment': 'dev',
             'releng_fedmsg_certname': None,
