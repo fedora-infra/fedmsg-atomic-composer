@@ -19,13 +19,22 @@ from systemd import journal
 
 
 class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
+    """A fedmsg-driven atomic ostree composer.
+
+    This consumer runs in the fedmsg-hub and reacts to whenever repositories
+    sync to the master mirror. When this happens we trigger the
+    rpm-ostree-toolbox taskrunner to kick off a treecompose by touching a file
+    under the `touch_dir`. We then monitor the output of the compose using the
+    systemd journal and upon completion perform various post-compose actions.
+    """
     implements(IReadDescriptor)
 
     def __init__(self, hub, *args, **kw):
+        # Map all of the options from our /etc/fedmsg.d config to self
         for key, item in hub.config.items():
             setattr(self, key, item)
-        super(AtomicComposer, self).__init__(hub, *args, **kw)
 
+        # Monitor the output of our taskrunner services
         self.journal = journal.Reader()
         for tree in self.trees:
             self.journal.add_match(_SYSTEMD_UNIT='atomic-compose-%s.service' % tree)
@@ -33,8 +42,17 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         self.journal.get_previous()
         reactor.addReader(self)
 
+        super(AtomicComposer, self).__init__(hub, *args, **kw)
+
     def consume(self, msg):
-        self.log.debug(msg)
+        """Called with each incoming fedmsg.
+
+        From here we trigger an rpm-ostree compose by touching a specific file
+        under the `touch_dir`. Then our `doRead` method is called with the
+        output of the rpm-ostree-toolbox treecompose, which we monitor to
+        determine when it has completed.
+        """
+        self.log.info(msg)
         body = msg['body']
         topic = body['topic']
         repo = None
@@ -106,6 +124,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         self.sync_out(repo)
 
     def update_ostree_summary(self, repo):
+        """Update the ostree summary file and return a path to it"""
         self.log.info('Updating the ostree summary for %s', repo)
         repo_path = os.path.join(self.output_dir, repo, 'repo')
         self.call(['ostree', '--repo=' + repo_path, 'summary', '--update'])
@@ -190,13 +209,15 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
             #self.log.info('%s -> %s symlink created', summary, md)
 
     def fileno(self):
+        """Returns our systemd journal descriptor to Twisted"""
         return self.journal.fileno()
 
     def logPrefix(self):
+        """Needed for Twisted's IReadDescriptor interface"""
         return self.__class__.__name__
 
     def connectionLost(self, reason):
-        self.log.error('journal connection lost: %s', reason)
+        self.log.error('connection lost: %s', reason)
         reactor.removeReader(self)
         self.journal.close()
         raise reason
