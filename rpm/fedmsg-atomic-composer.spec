@@ -11,7 +11,9 @@ Source0:        %{name}-%{version}.tar.bz2
 BuildArch:      noarch
 
 BuildRequires:  python-devel
+BuildRequires:  python-setuptools
 BuildRequires:  python-mock
+BuildRequires:  systemd
 
 Requires:       fedmsg-hub
 Requires:       rpm-ostree-toolbox
