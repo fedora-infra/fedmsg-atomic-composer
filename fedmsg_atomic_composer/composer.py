@@ -58,6 +58,10 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         else:
             self.log.warn('Unknown topic: %s', topic)
 
+        if not os.path.isdir(os.path.join(self.touch_dir, repo)):
+            self.log.info('Skipping %s', repo)
+            return
+
         self.sync_in(repo)
         self.trigger_compose(repo)
 
