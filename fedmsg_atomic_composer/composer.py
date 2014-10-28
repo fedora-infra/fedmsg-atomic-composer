@@ -66,8 +66,6 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         task = os.path.join(self.touch_dir, repo, 'treecompose')
         self.log.info('Touching %s', task)
         self.call(['touch', task])
-        self.notifier.watch(filepath.FilePath(task),
-                            callbacks=[self.compose_complete])
 
     def call(self, cmd, **kwargs):
         self.log.info('Running %s', cmd)
@@ -95,20 +93,13 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
                                          cwd=self.output_dir)
         self.log.info(out)
 
-    def compose_complete(self, watch, path, mask):
+    def compose_complete(self, repo):
         """Called when our tree compose has completed"""
-        self.log.info('%s %s', inotify.humanReadableMask(mask), path)
-        if not path.exists():
-            self.log.info('%s complete!', path)
-            self.notifier.ignore(path)
-            repo = path.dirname().split('/')[-1]
-            summary = self.update_ostree_summary(repo)
-            config = self.parse_config(repo)
-            repodata = self.download_repodata(repo, config)
-            self.inject_summary_into_repodata(summary, repodata)
-            self.sync_out(repo)
-        else:
-            self.log.info('%s already exists, and was modified?', path)
+        self.log.info('%s complete!', repo)
+        summary = self.update_ostree_summary(repo)
+        #config = self.parse_config(repo)
+        self.inject_summary_into_repodata(summary, repo)
+        self.sync_out(repo)
 
     def update_ostree_summary(self, repo):
         self.log.info('Updating the ostree summary for %s', repo)
