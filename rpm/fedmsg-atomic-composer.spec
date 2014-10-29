@@ -16,6 +16,7 @@ BuildRequires:  python-mock
 BuildRequires:  systemd
 
 Requires:       fedmsg-hub
+Requires:       rpm-ostree
 Requires:       rpm-ostree-toolbox
 Requires:       librepo
 Requires:       createrepo
