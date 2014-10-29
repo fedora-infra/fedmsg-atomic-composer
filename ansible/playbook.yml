@@ -4,6 +4,13 @@
     trees: ['rawhide', 'f21']
 
   tasks:
+    - yum: name={{ item }} state=present
+      with_items:
+        - fedmsg-hub
+        - fedmsg-relay
+        - rpm-ostree-toolbox
+        - ostree
+        #- fedmsg-atomic-composer
 
     - user: name=rpmostreecompose
             shell=/bin/bash
@@ -13,14 +20,6 @@
 
     - authorized_key: user={{ user['name'] }}
                       key="{{ user['ssh_public_key'] }}"
-
-    - yum: name={{ item }} state=present
-      with_items:
-        - fedmsg-hub
-        - fedmsg-relay
-        - rpm-ostree-toolbox
-        - ostree
-        #- fedmsg-atomic-composer
 
     - file: path=/srv/fedora-atomic/output
             owner=rpmostreecompose group=rpmostreecompose mode=755 state=directory
