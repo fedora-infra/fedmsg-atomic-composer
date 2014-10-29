@@ -10,7 +10,7 @@
         - fedmsg-relay
         - rpm-ostree-toolbox
         - ostree
-        #- fedmsg-atomic-composer
+        - fedmsg-atomic-composer
 
     - user: name=rpmostreecompose
             shell=/bin/bash
