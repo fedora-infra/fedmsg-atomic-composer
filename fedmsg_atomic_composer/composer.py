@@ -15,7 +15,6 @@ import os
 import glob
 import json
 import shutil
-import librepo
 import iniparse
 import subprocess
 import fedmsg.consumers
@@ -168,6 +167,7 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         composed ostree, and for each repo listed parsing the URL from the
         fedora-atomic.git/$REPO.repo file.
         """
+        import librepo
         arch = config.get('DEFAULT', 'arch')
         treefile = self.extract_treefile(repo, config)
         for yum_repo in treefile['repos']:
