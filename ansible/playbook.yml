@@ -1,5 +1,7 @@
 - hosts: localhost
   sudo: yes
+  vars:
+    trees: ['rawhide', 'f21']
 
   tasks:
 
@@ -25,21 +27,15 @@
 
     - file: path=/srv/fedora-atomic/output/{{ item }}/
             owner=rpmostreecompose group=rpmostreecompose mode=755 state=directory
-      with_items:
-        - rawhide
-        - f21
+      with_items: trees
 
     - file: path=/srv/fedora-atomic/{{ item }}/tasks/treecompose
             owner=rpmostreecompose group=rpmostreecompose mode=755 state=directory
-      with_items:
-        - rawhide
-        - f21
+      with_items: trees
 
     - file: path=/srv/inbox/{{ item }}
             owner=rpmostreecompose group=rpmostreecompose mode=755 state=directory
-      with_items:
-        - rawhide
-        - f21
+      with_items: trees
 
     - git: repo=https://git.fedorahosted.org/git/fedora-atomic.git
            dest=/srv/fedora-atomic/rawhide/fedora-atomic
@@ -53,9 +49,7 @@
     - command: systemctl daemon-reload
 
     - service: name=atomic-compose-{{ item }} enabled=yes state=restarted
-      with_items:
-        - rawhide
-        - f21
+      with_items: trees
 
     - service: name=fedmsg-atomic-composer enabled=yes state=restarted
 
@@ -66,13 +60,9 @@
       sudo_user: rpmostreecompose
       args:
         creates: /srv/fedora-atomic/output/{{ item }}/repo
-      with_items:
-       - rawhide
-       - f21
+      with_items: trees
 
     - file: src=/srv/fedora-atomic/output/{{ item }}/repo
             dest=/srv/fedora-atomic/{{ item }}/repo
             owner=rpmostreecompose group=rpmostreecompose state=link
-      with_items:
-       - rawhide
-       - f21
+      with_items: trees
