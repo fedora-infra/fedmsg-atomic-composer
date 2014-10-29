@@ -4,8 +4,8 @@ After=network.target
 [Service]
 ExecStart=/usr/bin/fedmsg-hub
 Type=simple
-User=composer
-Group=composer
+User=rpmostreecompose
+Group=rpmostreecompose
 
 [Install]
 WantedBy=multi-user.target

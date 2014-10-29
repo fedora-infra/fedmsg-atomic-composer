@@ -3,7 +3,7 @@
 [Service]
 WorkingDirectory=/srv/fedora-atomic/f21
 ExecStart=/usr/bin/rpm-ostree-toolbox taskrunner /srv/inbox/f21
-Group=composer
+Group=rpmostreecompose
 
 [Install]
 WantedBy=multi-user.target

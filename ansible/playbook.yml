@@ -3,8 +3,9 @@
 
   tasks:
 
-    - user: name=composer
-            groups="systemd-journal"
+    - user: name=rpmostreecompose
+            shell=/bin/bash
+            groups=systemd-journal
             generate_ssh_key=yes
       register: user
 
@@ -20,22 +21,22 @@
         #- fedmsg-atomic-composer
 
     - file: path=/srv/fedora-atomic/output
-            owner=composer group=composer mode=755 state=directory
+            owner=rpmostreecompose group=rpmostreecompose mode=755 state=directory
 
     - file: path=/srv/fedora-atomic/output/{{ item }}/
-            owner=composer group=composer mode=755 state=directory
+            owner=rpmostreecompose group=rpmostreecompose mode=755 state=directory
       with_items:
         - rawhide
         - f21
 
     - file: path=/srv/fedora-atomic/{{ item }}/tasks/treecompose
-            owner=composer group=composer mode=755 state=directory
+            owner=rpmostreecompose group=rpmostreecompose mode=755 state=directory
       with_items:
         - rawhide
         - f21
 
     - file: path=/srv/inbox/{{ item }}
-            owner=composer group=composer mode=755 state=directory
+            owner=rpmostreecompose group=rpmostreecompose mode=755 state=directory
       with_items:
         - rawhide
         - f21
@@ -62,7 +63,7 @@
 
     - command: /usr/bin/ostree init --repo=/srv/fedora-atomic/output/{{ item }}/repo --mode=archive-z2
       sudo: yes
-      sudo_user: composer
+      sudo_user: rpmostreecompose
       args:
         creates: /srv/fedora-atomic/output/{{ item }}/repo
       with_items:
@@ -71,7 +72,7 @@
 
     - file: src=/srv/fedora-atomic/output/{{ item }}/repo
             dest=/srv/fedora-atomic/{{ item }}/repo
-            owner=composer group=composer state=link
+            owner=rpmostreecompose group=rpmostreecompose state=link
       with_items:
        - rawhide
        - f21

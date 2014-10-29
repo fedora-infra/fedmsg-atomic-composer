@@ -3,7 +3,7 @@
 [Service]
 WorkingDirectory=/srv/fedora-atomic/rawhide
 ExecStart=/usr/bin/rpm-ostree-toolbox taskrunner /srv/inbox/rawhide
-Group=composer
+Group=rpmostreecompose
 
 [Install]
 WantedBy=multi-user.target
