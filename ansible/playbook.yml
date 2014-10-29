@@ -59,7 +59,7 @@
 
     - service: name=fedmsg-atomic-composer enabled=yes state=restarted
 
-    - service: name=fedmsg-relay state=started
+    - service: name=fedmsg-relay enabled=yes state=started
 
     - command: /usr/bin/ostree init --repo=/srv/fedora-atomic/output/{{ item }}/repo --mode=archive-z2
       sudo: yes
