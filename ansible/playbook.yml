@@ -22,18 +22,18 @@
                       key="{{ user['ssh_public_key'] }}"
 
     - file: path=/srv/fedora-atomic/output
-            owner=rpmostreecompose group=rpmostreecompose mode=755 state=directory
+            owner={{ user['name'] }} group={{ user['name'] }} mode=755 state=directory
 
     - file: path=/srv/fedora-atomic/output/{{ item }}/
-            owner=rpmostreecompose group=rpmostreecompose mode=755 state=directory
+            owner={{ user['name'] }} group={{ user['name'] }} mode=755 state=directory
       with_items: trees
 
     - file: path=/srv/fedora-atomic/{{ item }}/tasks/treecompose
-            owner=rpmostreecompose group=rpmostreecompose mode=755 state=directory
+            owner={{ user['name'] }} group={{ user['name'] }} mode=755 state=directory
       with_items: trees
 
     - file: path=/srv/inbox/{{ item }}
-            owner=rpmostreecompose group=rpmostreecompose mode=755 state=directory
+            owner={{ user['name'] }} group={{ user['name'] }} mode=755 state=directory
       with_items: trees
 
     - git: repo=https://git.fedorahosted.org/git/fedora-atomic.git
@@ -56,12 +56,12 @@
 
     - command: /usr/bin/ostree init --repo=/srv/fedora-atomic/output/{{ item }}/repo --mode=archive-z2
       sudo: yes
-      sudo_user: rpmostreecompose
+      sudo_user: "{{ user['name'] }}"
       args:
         creates: /srv/fedora-atomic/output/{{ item }}/repo
       with_items: trees
 
     - file: src=/srv/fedora-atomic/output/{{ item }}/repo
             dest=/srv/fedora-atomic/{{ item }}/repo
-            owner=rpmostreecompose group=rpmostreecompose state=link
+            owner={{ user['name'] }} group={{ user['name'] }} state=link
       with_items: trees
