@@ -128,11 +128,12 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
 
     def compose_complete(self, repo):
         """Called when our tree compose has completed"""
-        self.log.info('%s complete!', repo)
+        self.log.info('%s treecompose complete', repo)
         summary = self.update_ostree_summary(repo)
         #config = self.parse_config(repo)
         self.inject_summary_into_repodata(summary, repo)
         self.sync_out(repo)
+        self.log.info('%s complete', repo)
 
     def update_ostree_summary(self, repo):
         """Update the ostree summary file and return a path to it"""
