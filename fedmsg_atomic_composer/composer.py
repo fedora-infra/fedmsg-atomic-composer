@@ -248,3 +248,5 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
                 reactor.callInThread(self.compose_complete, repo)
             elif msg.startswith('INFO:root:task treecompose exited with error'):
                 self.log.error(msg)
+            elif msg.startswith('INFO:root:task:'):
+                self.log.info(msg[16:])
