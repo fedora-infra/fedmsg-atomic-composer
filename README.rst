@@ -4,6 +4,14 @@ fedmsg-atomic-composer
 Triggers `Atomic <http://projectatomic.io>`_ ostree composes when Fedora
 updates/rawhide/branched repositories are updated.
 
+Bootstrap
+---------
+
+.. code-block::
+
+   sudo yum -y install git rpmdevtools python-{devel,mock} ansible
+   rpmdev-setuptree
+
 Build
 -----
 
