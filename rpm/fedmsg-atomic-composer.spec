@@ -20,6 +20,7 @@ Requires:       rpm-ostree
 Requires:       rpm-ostree-toolbox
 Requires:       librepo
 Requires:       createrepo
+Requires:       systemd-python
 
 # Version requirement for specifying a list of topics
 #Requires:       python-moksha-hub >= 1.4.4
