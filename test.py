@@ -19,6 +19,7 @@ class FakeHub(object):
             'production_repos': tempfile.mkdtemp(),
             'local_repos': tempfile.mkdtemp(),
             'topic': ['org.fedoraproject.test'],
+            'trees': ['rawhide'],
         }
 
     def subscribe(self, *args, **kw):
