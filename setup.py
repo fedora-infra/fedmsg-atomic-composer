@@ -11,6 +11,7 @@ setup(
     install_requires=['fedmsg'],
     tests_require=['mock'],
     packages=['fedmsg_atomic_composer'],
+    package_data={'fedmsg_atomic_composer': ['templates/*.mako']},
     entry_points="""
     [moksha.consumer]
     fedmsg_atomic_composer = fedmsg_atomic_composer:AtomicComposer

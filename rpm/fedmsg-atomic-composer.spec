@@ -13,17 +13,13 @@ BuildArch:      noarch
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
 BuildRequires:  python-mock
-BuildRequires:  systemd
 
 Requires:       fedmsg-hub
 Requires:       rpm-ostree
-Requires:       rpm-ostree-toolbox
-Requires:       librepo
-Requires:       createrepo
-Requires:       systemd-python
+Requires:       python-mako
 
 # Version requirement for specifying a list of topics
-#Requires:       python-moksha-hub >= 1.4.4
+Requires:       python-moksha-hub >= 1.4.4
 
 %description
 This is a Fedmsg consumer that listens for when the Fedora
@@ -45,22 +41,16 @@ then triggers Atomic OSTree composes.
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
 install -D -m644 fedmsg.d/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
-
 install -D -m644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
-for repo in rawhide f21; do
-    install -D -m644 systemd/atomic-compose-$repo.service %{buildroot}%{_unitdir}/atomic-compose-${repo}.service
-    install -D -m644 config/$repo.ini %{buildroot}/srv/fedora-atomic/$repo/config.ini
-done
-
+mkdir -p %{buildroot}/srv/fedora-atomic/
 
 %files
 %doc README.rst LICENSE ansible
 %{python_sitelib}/%{modname}/
 %{python_sitelib}/%{modname}*.egg-info
 %config(noreplace) %{_sysconfdir}/fedmsg.d/%{modname}.py*
-%{_unitdir}/atomic-compose-*.service
 %{_unitdir}/%{name}.service
-%attr(755, composer, composer) /srv/fedora-atomic/
+%attr(755, rpmostreecompose, rpmostreecompose) /srv/fedora-atomic/
 
 
 %changelog

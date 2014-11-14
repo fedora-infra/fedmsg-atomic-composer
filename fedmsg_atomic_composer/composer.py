@@ -12,19 +12,17 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import os
-import glob
+import copy
 import json
 import shutil
-import iniparse
+import tempfile
 import subprocess
+import pkg_resources
 import fedmsg.consumers
 
-from zope.interface import implements
-
-from twisted.internet.interfaces import IReadDescriptor
+from datetime import datetime
+from mako.template import Template
 from twisted.internet import reactor
-
-from systemd import journal
 
 
 class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
@@ -36,21 +34,11 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
     under the `touch_dir`. We then monitor the output of the compose using the
     systemd journal and upon completion perform various post-compose actions.
     """
-    implements(IReadDescriptor)
 
     def __init__(self, hub, *args, **kw):
         # Map all of the options from our /etc/fedmsg.d config to self
         for key, item in hub.config.items():
             setattr(self, key, item)
-
-        # Monitor the output of our taskrunner services
-        self.journal = journal.Reader()
-        for tree in self.trees:
-            unit = 'atomic-compose-%s.service' % tree
-            self.journal.add_match(_SYSTEMD_UNIT=unit)
-        self.journal.seek_tail()
-        self.journal.get_previous()
-        reactor.addReader(self)
 
         super(AtomicComposer, self).__init__(hub, *args, **kw)
 
@@ -81,24 +69,94 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
                 return
             repo = branch
         elif 'updates.fedora' in topic:
-            self.log.info('New %(release)s %(repo)s compose ready',
+            self.log.info('New Fedora %(release)s %(repo)s compose ready',
                           body['msg'])
-            repo = 'f' + body['msg']['release']
+            repo = 'f%(release)s-%(repo)s' % body['msg']
         else:
             self.log.warn('Unknown topic: %s', topic)
 
-        if not os.path.isdir(os.path.join(self.touch_dir, repo)):
-            self.log.info('Skipping %s', repo)
-            return
+        # Copy of the release dict and expand some paths
+        release = copy.deepcopy(self.releases[repo])
+        release['tmp_dir'] = tempfile.mkdtemp()
+        for key in ('output_dir', 'log_dir'):
+            release[key] = getattr(self, key).format(**release)
 
-        self.sync_in(repo)
-        self.trigger_compose(repo)
+        reactor.callInThread(self.compose, release)
 
-    def trigger_compose(self, repo):
-        """Trigger the rpm-ostree-toolbox taskrunner treecompose"""
-        task = os.path.join(self.touch_dir, repo, 'treecompose')
-        self.log.info('Touching %s', task)
-        self.call(['touch', task])
+    def compose(self, release):
+        self.update_configs(release)
+        self.generate_mock_config(release)
+        self.init_mock(release)
+        self.ostree_init(release)
+        self.ostree_compose(release)
+        self.update_ostree_summary(release)
+        self.cleanup(release)
+
+    def cleanup(self, release):
+        """Cleanup any temporary files after the compose"""
+        shutil.rmtree(release['tmp_dir'])
+
+    def update_configs(self, release):
+        """ Update the fedora-atomic.git repositories for a given release """
+        git_dir = release['git_dir'] = os.path.join(release['tmp_dir'],
+                os.path.basename(self.git_repo))
+        self.call(['git', 'clone', '-b', release['git_branch'],
+                   self.git_repo, git_dir])
+
+    def mock_cmd(self, release, cmd):
+        """Run a mock command in the chroot for a given release"""
+        cmd = isinstance(cmd, list) and cmd or [cmd]
+        out, err, code = self.call(['/usr/bin/mock', '-r', release['mock'],
+                                    '--configdir=' + release['mock_dir']] + cmd)
+        self.log.debug(out)
+
+    def init_mock(self, release):
+        """Initialize/update our mock chroot"""
+        root = '/var/lib/mock/%s' % release['mock']
+        if not os.path.isdir(root):
+            self.mock_cmd(release, '--init')
+            self.log.info('mock chroot initialized')
+        else:
+            self.mock_cmd(release, '--update')
+            self.log.info('mock chroot updated')
+
+    def generate_mock_config(self, release):
+        """Dynamically generate our mock configuration"""
+        mock_tmpl = pkg_resources.resource_string(__name__, 'templates/mock.mako')
+        mock_dir = release['mock_dir'] = os.path.join(release['tmp_dir'], 'mock')
+        mock_cfg = os.path.join(release['mock_dir'], release['mock'] + '.cfg')
+        os.mkdir(mock_dir)
+        for cfg in ('site-defaults.cfg', 'logging.ini'):
+            os.symlink('/etc/mock/%s' % cfg, os.path.join(mock_dir, cfg))
+        with file(mock_cfg, 'w') as cfg:
+            cfg.write(Template(mock_tmpl).render(**release))
+
+    def mock_shell(self, release, cmd):
+        self.mock_cmd(release, ['--shell', cmd])
+
+    def ostree_init(self, release):
+        base = os.path.dirname(release['output_dir'])
+        if not os.path.isdir(base):
+            self.log.info('Creating %s', base)
+            os.makedirs(base, mode=0755)
+        if not os.path.isdir(release['log_dir']):
+            os.makedirs(release['log_dir'])
+        out = os.path.join(base, release['tree'])
+        if not os.path.isdir(out):
+            cmd = 'ostree init --repo=%s --mode=archive-z2 >%s 2>&1'
+            logfile = os.path.join(release['log_dir'], 'ostree.log')
+            self.mock_shell(release, cmd % (out, logfile))
+
+    def ostree_compose(self, release):
+        logfile = os.path.join(release['log_dir'], 'rpm-ostree.log')
+        start = datetime.utcnow()
+        cmd = 'rpm-ostree compose tree --repo=%s %s >%s 2>&1'
+        treefile = os.path.join(release['git_dir'], 'treefile.json')
+        with file(treefile, 'w') as tree:
+            json.dump(release['treefile'], tree)
+        self.mock_shell(release, cmd % (release['output_dir'], treefile, logfile))
+        self.log.info('rpm-ostree compose complete (%s)',
+                      datetime.utcnow() - start)
 
     def call(self, cmd, **kwargs):
         self.log.info('Running %s', cmd)
@@ -107,146 +165,13 @@ class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
         out, err = p.communicate()
         if err:
             self.log.error(err)
+        if p.returncode != 0:
+            self.log.error('returncode = %d' % p.returncode)
         return out, err, p.returncode
 
-    def sync_in(self, repo):
-        """Sync the canonical ostree locally"""
-        prod = os.path.join(self.production_repos, repo)
-        if os.path.exists(prod):
-            out, err, returncode = self.call(['rsync', '-ave', 'ssh', prod,
-                                              os.path.join(self.output_dir)])
-            self.log.info(out)
-        else:
-            self.log.info('Production repo doesn\'t exist yet: %s', prod)
-
-    def sync_out(self, repo):
-        """Sync the output to production"""
-        out, err, returncode = self.call(['rsync', '-ave', 'ssh', repo,
-                                         self.production_repos],
-                                         cwd=self.output_dir)
-        self.log.info(out)
-
-    def compose_complete(self, repo):
-        """Called when our tree compose has completed"""
-        self.log.info('%s treecompose complete', repo)
-        summary = self.update_ostree_summary(repo)
-        #config = self.parse_config(repo)
-        self.inject_summary_into_repodata(summary, repo)
-        self.sync_out(repo)
-        self.log.info('%s complete', repo)
-
-    def update_ostree_summary(self, repo):
+    def update_ostree_summary(self, release):
         """Update the ostree summary file and return a path to it"""
-        self.log.info('Updating the ostree summary for %s', repo)
-        repo_path = os.path.join(self.output_dir, repo, 'repo')
-        self.call(['ostree', '--repo=' + repo_path, 'summary', '--update'])
-        return os.path.join(repo_path, 'summary')
-
-    def extract_treefile(self, repo, config):
-        """Extract and decode the treefile JSON from the composed tree"""
-        ref = config.get('DEFAULT', 'ref')
-        repo_path = os.path.join(self.output_dir, repo, 'repo')
-        out, err, code = self.call(['ostree', '--repo=' + repo_path, 'cat', ref,
-                                    '/usr/share/rpm-ostree/treefile.json'])
-        if err:
-            self.log.error(err)
-        if code != 0:
-            self.log.error(out)
-            return
-        return json.loads(out)
-
-    def parse_config(self, repo):
-        """Parse the config.ini for a given repo"""
-        config = iniparse.ConfigParser()
-        config.read(os.path.join(self.local_repos, repo, 'config.ini'))
-        return config
-
-    def download_repodata(self, repo, config):
-        """
-        Determine the repositories used to compose this tree, and sync the
-        repodata locally. We do this by extracting the JSON treefile from the
-        composed ostree, and for each repo listed parsing the URL from the
-        fedora-atomic.git/$REPO.repo file.
-        """
-        import librepo
-        arch = config.get('DEFAULT', 'arch')
-        treefile = self.extract_treefile(repo, config)
-        for yum_repo in treefile['repos']:
-            handle = librepo.Handle()
-            handle.repotype = librepo.LR_YUMREPO
-
-            repo_file = os.path.join(self.local_repos, repo,
-                                     'fedora-atomic', yum_repo + '.repo')
-            if os.path.exists(repo_file):
-                self.log.info('Found yum repo: %s', repo_file)
-                config = iniparse.ConfigParser()
-                config.read(repo_file)
-                try:
-                    url = config.get(yum_repo, 'baseurl')
-                    url = url.replace('$basearch', arch)
-                    handle.urls = [url]
-                except iniparse.NoOptionError:
-                    url = config.get(yum_repo, 'mirrorlist')
-                    url = url.replace('$basearch', arch)
-                    handle.mirrorlist = url
-
-                dest = os.path.join(self.output_dir, repo,
-                                    yum_repo + '.repodata')
-                if os.path.exists(dest):
-                    shutil.rmtree(dest)
-                os.mkdir(dest)
-                handle.destdir = dest
-
-                result = librepo.Result()
-                try:
-                    self.log.info('Downloading repo metadata from %s', url)
-                    handle.perform(result)
-                    self.log.info('Repo metadata saved to %s', dest)
-                    self.log.info(result)
-                    return dest
-                except:
-                    self.log.exception('Unable to download repodata')
-            else:
-                self.log.error('Unable to find repo: %s', repo_file)
-
-    def inject_summary_into_repodata(self, summary, repo):
-        """Inject the ostree summary file into the yum repodata"""
-        self.log.info('Injecting ostree summary into yum repodata')
-        repomd = glob.glob(os.path.join(self.output_dir, repo, 'repodata',
-                                        '*', 'repomd.xml'))
-        for md in repomd:
-            self.log.info('Found repodata: %s', md)
-            #repodata = os.path.dirname(md)
-            #os.unlink(md)
-            #os.symlink(summary, md)
-            #self.log.info('%s -> %s symlink created', summary, md)
-
-    def fileno(self):
-        """Returns our systemd journal descriptor to Twisted"""
-        return self.journal.fileno()
-
-    def logPrefix(self):
-        """Needed for Twisted's IReadDescriptor interface"""
-        return self.__class__.__name__
-
-    def connectionLost(self, reason):
-        self.log.error('connection lost: %s', reason)
-        reactor.removeReader(self)
-        self.journal.close()
-        raise reason
-
-    def doRead(self):
-        """Called when data is available from the journal"""
-        if self.journal.process() != journal.APPEND:
-            return
-        for entry in self.journal:
-            msg = entry['MESSAGE']
-            if msg == 'INFO:root:task treecompose exited successfully':
-                unit = entry['_SYSTEMD_UNIT']
-                repo = unit.replace('atomic-compose-', '')\
-                           .replace('.service', '')
-                reactor.callInThread(self.compose_complete, repo)
-            elif msg.startswith('INFO:root:task treecompose exited with error'):
-                self.log.error(msg)
-            elif msg.startswith('INFO:root:task:'):
-                self.log.info(msg[16:])
+        self.log.info('Updating the ostree summary for %s', release['name'])
+        cmd = 'ostree --repo=%s summary --update' % release['output_dir']
+        self.mock_shell(release, cmd)
+        return os.path.join(release['output_dir'], 'summary')
