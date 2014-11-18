@@ -18,70 +18,18 @@ import shutil
 import tempfile
 import subprocess
 import pkg_resources
-import fedmsg.consumers
 
 from datetime import datetime
 from mako.template import Template
-from twisted.internet import reactor
 
 
-class AtomicComposer(fedmsg.consumers.FedmsgConsumer):
-    """A fedmsg-driven atomic ostree composer.
+class AtomicComposer(object):
+    """An atomic ostree composer"""
 
-    This consumer runs in the fedmsg-hub and reacts to whenever repositories
-    sync to the master mirror. When this happens we trigger the
-    rpm-ostree-toolbox taskrunner to kick off a treecompose by touching a file
-    under the `touch_dir`. We then monitor the output of the compose using the
-    systemd journal and upon completion perform various post-compose actions.
-    """
-
-    def __init__(self, hub, *args, **kw):
-        # Map all of the options from our /etc/fedmsg.d config to self
-        for key, item in hub.config.items():
+    def __init__(self, config, *args, **kw):
+        # Map all of the options from our config to ourself
+        for key, item in config.items():
             setattr(self, key, item)
-
-        super(AtomicComposer, self).__init__(hub, *args, **kw)
-
-    def consume(self, msg):
-        """Called with each incoming fedmsg.
-
-        From here we trigger an rpm-ostree compose by touching a specific file
-        under the `touch_dir`. Then our `doRead` method is called with the
-        output of the rpm-ostree-toolbox treecompose, which we monitor to
-        determine when it has completed.
-        """
-        self.log.info(msg)
-        body = msg['body']
-        topic = body['topic']
-        repo = None
-
-        if 'rawhide' in topic:
-            arch = body['msg']['arch']
-            self.log.info('New rawhide %s compose ready', arch)
-            repo = 'rawhide'
-        elif 'branched' in topic:
-            arch = body['msg']['arch']
-            branch = body['msg']['branch']
-            self.log.info('New %s %s branched compose ready', branch, arch)
-            log = body['msg']['log']
-            if log != 'done':
-                self.log.warn('Compose not done?')
-                return
-            repo = branch
-        elif 'updates.fedora' in topic:
-            self.log.info('New Fedora %(release)s %(repo)s compose ready',
-                          body['msg'])
-            repo = 'f%(release)s-%(repo)s' % body['msg']
-        else:
-            self.log.warn('Unknown topic: %s', topic)
-
-        # Copy of the release dict and expand some paths
-        release = copy.deepcopy(self.releases[repo])
-        release['tmp_dir'] = tempfile.mkdtemp()
-        for key in ('output_dir', 'log_dir'):
-            release[key] = getattr(self, key).format(**release)
-
-        reactor.callInThread(self.compose, release)
 
     def compose(self, release):
         self.update_configs(release)
