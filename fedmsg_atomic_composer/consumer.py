@@ -31,7 +31,7 @@ class AtomicConsumer(fedmsg.consumers.FedmsgConsumer):
         for key, item in hub.config.items():
             setattr(self, key, item)
 
-        super(AtomicComposer, self).__init__(hub, *args, **kw)
+        super(AtomicConsumer, self).__init__(hub, *args, **kw)
 
     def consume(self, msg):
         """Called with each incoming fedmsg.
