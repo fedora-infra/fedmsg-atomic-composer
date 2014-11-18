@@ -17,6 +17,11 @@ config = dict(
             },
             'mock': 'fedora-21-updates-x86_64',
             'git_branch': 'f21',
+
+            # The path to the latest updates repo. We default to
+            # download.fedoraproject.org, but in production bodhi can overwrite
+            # this with it's own mash.
+            'mash_path': 'https://download.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
         },
         'f21-updates-testing': {
             'name': 'f21-updates-testing',
@@ -31,6 +36,7 @@ config = dict(
             },
             'mock': 'fedora-21-updates-testing-x86_64',
             'git_branch': 'f21',
+            'mash_path': 'https://download.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
         },
     },
     fedmsg_atomic_composer=True,
