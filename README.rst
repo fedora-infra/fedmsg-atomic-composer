@@ -76,7 +76,7 @@ Using the Python API
 --------------------
 
 To compose a tree via the Python API, all you need to do is pass the
-:meth:`compose` method a `release` dictionary from the `config.py`.
+`compose` method a `release` dictionary from the `config.py`.
 
 .. code-block:: python
 
