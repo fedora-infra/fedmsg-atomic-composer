@@ -141,7 +141,7 @@ class AtomicComposer(object):
 
     def ostree_compose(self, release):
         start = datetime.utcnow()
-        cmd = 'rpm-ostree compose tree --repo=%s %s'
+        cmd = 'rpm-ostree compose tree --workdir-tmpfs --repo=%s %s'
         treefile = os.path.join(release['git_dir'], 'treefile.json')
         with file(treefile, 'w') as tree:
             json.dump(release['treefile'], tree)
