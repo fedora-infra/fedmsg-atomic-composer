@@ -80,22 +80,17 @@ Build & Deploy locally
 
    ./build.sh
 
-Deploy
-------
+Enable & Monitor the fedmsg consumer
+------------------------------------
 
 .. code-block:: bash
 
-   ansible-playbook --ask-sudo-pass ansible/playbook.yml
+   systemctl enable fedmsg-atomic-composer
+   systemctl start fedmsg-atomic-composer
+   journalctl -f -u fedmsg-atomic-composer
 
-Monitor
--------
-
-.. code-block:: bash
-
-   journalctl -f -u fedmsg-atomic-composer -u atomic-compose\*
-
-Triggering locally
-------------------
+Triggering locally via fedmsg
+-----------------------------
 
 .. code-block:: bash
 
