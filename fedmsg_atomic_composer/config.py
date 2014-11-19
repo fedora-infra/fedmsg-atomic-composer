@@ -70,7 +70,7 @@ config = dict(
 
     # Map and expand certain global variables to each release
     map_to_release=('output_dir', 'log_dir', 'git_repo', 'mock_cmd',
-                    'ostree_init', 'ostree_compose'),
+                    'ostree_init', 'ostree_compose', 'ostree_summary'),
 )
 
 for key in config.get('map_to_release', []):
