@@ -94,9 +94,8 @@ class AtomicComposer(object):
     def mock_cmd(self, release, cmd):
         """Run a mock command in the chroot for a given release"""
         cmd = isinstance(cmd, list) and cmd or [cmd]
-        out, err, code = self.call(['/usr/bin/mock', '-r', release['mock'],
-                                    '--configdir=' + release['mock_dir']] + cmd)
-        self.log.debug(out)
+        self.call(['/usr/bin/mock', '--new-chroot', '-r', release['mock'],
+                   '--configdir=' + release['mock_dir']] + cmd)
 
     def init_mock(self, release):
         """Initialize/update our mock chroot"""
