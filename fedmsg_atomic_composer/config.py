@@ -62,8 +62,13 @@ config = dict(
            'org.fedoraproject.stg.compose.rawhide.rsync.complete',
            'org.fedoraproject.dev.bodhi.updates.fedora.sync',
            'org.fedoraproject.dev.compose.branched.rsync.complete',
-           'org.fedoraproject.dev.compose.rawhide.rsync.complete'],
-    output_dir='/srv/fedora-atomic/{version}/{arch}/{repo}/{tree}',
-    log_dir='/srv/fedora-atomic/logs/{version}/{arch}/{repo}/{tree}',
-    git_repo='https://git.fedorahosted.org/git/fedora-atomic.git',
+           'org.fedoraproject.dev.compose.rawhide.rsync.complete'
+    ],
+
+    # Map and expand certain global variables to each release
+    map_to_release=('output_dir', 'log_dir', 'git_repo'),
 )
+
+for key in config.get('map_to_release', []):
+    for name, release in config['releases'].items():
+        release[key] = config[key].format(**release)
