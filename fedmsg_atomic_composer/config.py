@@ -47,6 +47,10 @@ config = dict(
     log_dir='/srv/fedora-atomic/logs/{version}/{arch}/{repo}/{tree}',
     git_repo='https://git.fedorahosted.org/git/fedora-atomic.git',
 
+    # OSTree commands
+    ostree_init='ostree --repo={output_dir} init --mode=archive-z2',
+    ostree_compose='rpm-ostree compose tree --workdir-tmpfs --repo={output_dir} %s',
+
     # fedmsg-specific configuration
     fedmsg_atomic_composer=True,
     config_key='fedmsg_atomic_composer',
@@ -62,7 +66,8 @@ config = dict(
     ],
 
     # Map and expand certain global variables to each release
-    map_to_release=('output_dir', 'log_dir', 'git_repo'),
+    map_to_release=('output_dir', 'log_dir', 'git_repo', 'ostree_init',
+                    'ostree_compose'),
 )
 
 for key in config.get('map_to_release', []):

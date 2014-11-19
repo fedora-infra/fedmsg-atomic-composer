@@ -139,16 +139,15 @@ class AtomicComposer(object):
             self.log.info('Creating %s', base)
             os.makedirs(base, mode=0755)
         if not os.path.isdir(out):
-            cmd = 'ostree --repo=%s init --mode=archive-z2'
-            self.mock_shell(release, cmd % out)
+            self.mock_shell(release, release['ostree_init'])
 
     def ostree_compose(self, release):
         start = datetime.utcnow()
-        cmd = 'rpm-ostree compose tree --workdir-tmpfs --repo=%s %s'
         treefile = os.path.join(release['git_dir'], 'treefile.json')
+        cmd = release['ostree_compose'] % treefile
         with file(treefile, 'w') as tree:
             json.dump(release['treefile'], tree)
-        self.mock_shell(release, cmd % (release['output_dir'], treefile))
+        self.mock_shell(release, cmd)
         self.log.info('rpm-ostree compose complete (%s)',
                       datetime.utcnow() - start)
 
