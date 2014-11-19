@@ -16,6 +16,7 @@ import click
 from fedmsg_atomic_composer.composer import AtomicComposer
 from fedmsg_atomic_composer.config import config
 
+
 @click.command()
 @click.argument('release')
 def compose(release):
@@ -33,6 +34,7 @@ def compose(release):
         click.echo('{name} tree compose failed'.format(**result))
 
     click.echo('Logs: {log_file}'.format(**result))
+
 
 if __name__ == '__main__':
     compose()

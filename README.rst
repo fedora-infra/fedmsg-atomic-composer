@@ -4,6 +4,8 @@ fedmsg-atomic-composer
 Triggers `Atomic <http://projectatomic.io>`_ ostree composes when Fedora
 updates/rawhide/branched repositories are updated.
 
+You can also trigger composes via a command-line tool or Python API.
+
 Features
 --------
 
@@ -11,8 +13,9 @@ Features
  * Dynamic yum repo configuration generation
  * Dynamic mock configuration generation
  * Efficient mock chroot management
- * fedmsg-triggers
+ * fedmsg-consumer that can trigger composes when new repos are available
  * Python API
+ * CLI
 
 Bootstrap
 ---------
@@ -22,8 +25,56 @@ Bootstrap
    sudo yum -y install git rpmdevtools python-{devel,mock} ansible
    rpmdev-setuptree
 
-Build
------
+
+Configure
+---------
+
+All of the configuration lives in the `config.py` in JSON format. You can
+define all of your releases like so:
+
+.. code-block:: bash
+
+   config = dict(
+        releases={
+            'f21-updates': {
+                'name': 'f21-updates',
+                'repo': 'updates',
+                'version': '21',
+                'arch': 'x86_64',
+
+                # Here you define your OSTree `treefile.json
+                <https://github.com/projectatomic/rpm-ostree/blob/master/doc/treefile.md>`_
+                'tree': 'docker-host',
+                'treefile': {
+                    'include': 'fedora-atomic-docker-host.json',
+                    'ref': 'fedora-atomic/f21/x86_64/updates/docker-host',
+                    'repos': ['fedora-21', 'updates'],
+                    'selinux': False,
+                },
+
+                # The name of the mock chroot to build and maintain
+                'mock': 'fedora-21-updates-x86_64',
+
+                # The git branch to use in the `git_repo` for the parent
+                # treefile & repo configurations
+                'git_branch': 'f21',
+
+                # Add or overwrite yum repository name:urls. This lets you 
+                # compose trees against your own repositories.
+                'repos': {},
+            }, …
+
+
+Composing a tree via the CLI
+----------------------------
+
+.. code-block:: bash
+
+   sudo -iu rpmostreecompose fedmsg-atomic-composer-cli f21-updates-testing
+
+
+Build & Deploy locally
+----------------------
 
 .. code-block:: bash
 
