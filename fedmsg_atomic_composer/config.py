@@ -1,5 +1,4 @@
 config = dict(
-    # Repos to compose
     releases={
         'f21-updates': {
             'name': 'f21-updates',

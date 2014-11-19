@@ -141,6 +141,7 @@ class AtomicComposer(object):
             self.mock_chroot(release, release['ostree_init'])
 
     def ostree_compose(self, release):
+        """Compose the OSTree in the mock container"""
         start = datetime.utcnow()
         treefile = os.path.join(release['git_dir'], 'treefile.json')
         cmd = release['ostree_compose'] % treefile

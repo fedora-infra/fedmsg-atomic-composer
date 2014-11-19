@@ -33,7 +33,7 @@ def compose(release):
     else:
         click.echo('{name} tree compose failed'.format(**result))
 
-    click.echo('Logs: {log_file}'.format(**result))
+    click.echo('Log: {log_file}'.format(**result))
 
 
 if __name__ == '__main__':
