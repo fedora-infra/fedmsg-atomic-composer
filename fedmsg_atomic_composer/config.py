@@ -15,7 +15,7 @@ config = dict(
             'mock': 'fedora-21-updates-x86_64',
             'git_branch': 'f21',
 
-            # Add additional, or overwrite yum repository urls.o
+            # Add additional, or overwrite yum repository urls.
             # This is so tools like bodhi can point to their own
             # local mashes when composing trees.
             'repos': {},
