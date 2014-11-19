@@ -50,7 +50,7 @@ config = dict(
     # OSTree commands
     ostree_init='/usr/bin/ostree --repo={output_dir} init --mode=archive-z2',
     ostree_compose='/usr/bin/rpm-ostree compose tree --workdir-tmpfs --repo={output_dir} %s',
-    ostree_summary='/usr/bin/ostree --repo={output_dir} summary --update'
+    ostree_summary='/usr/bin/ostree --repo={output_dir} summary --update',
 
     # fedmsg-specific configuration
     fedmsg_atomic_composer=True,
