@@ -9,13 +9,15 @@ You can also trigger composes via a command-line tool or Python API.
 Features
 --------
 
+ * Simple JSON configuration
  * Dynamic atomic treefile generation
  * Dynamic yum repo configuration generation
  * Dynamic mock configuration generation
  * Efficient mock chroot management
- * fedmsg-consumer that can trigger composes when new repos are available
+ * Seperate logfile for each compose
  * Python API
- * CLI
+ * A fedmsg consumer that can trigger composes when new repos are available
+ * A simple `fedmsg-atomic-composer-cli` command-line interface
 
 Bootstrap
 ---------
@@ -63,6 +65,13 @@ define all of your releases like so:
                 'repos': {},
             }, …
 
+Build & Install locally
+-----------------------
+
+.. code-block:: bash
+
+   ./build.sh
+
 
 Composing a tree via the CLI
 ----------------------------
@@ -87,13 +96,6 @@ To compose a tree via the Python API, all you need to do is pass the
    composer = AtomicComposer()
    result = composer.compose(release)
 
-
-Build & Deploy locally
-----------------------
-
-.. code-block:: bash
-
-   ./build.sh
 
 Enable & Monitor the fedmsg consumer
 ------------------------------------
