@@ -151,14 +151,18 @@ class AtomicComposer(object):
                       datetime.utcnow() - start)
 
     def call(self, cmd, **kwargs):
+        """A simple subprocess wrapper"""
         self.log.info('Running %s', cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE, **kwargs)
         out, err = p.communicate()
+        if out:
+            self.log.info(out)
         if err:
             self.log.error(err)
         if p.returncode != 0:
             self.log.error('returncode = %d' % p.returncode)
+            raise Exception
         return out, err, p.returncode
 
     def update_ostree_summary(self, release):
