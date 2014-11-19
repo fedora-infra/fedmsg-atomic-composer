@@ -10,11 +10,10 @@ Features
 --------
 
  * Simple JSON configuration
- * Dynamic atomic treefile generation
- * Dynamic yum repo configuration generation
- * Dynamic mock configuration generation
- * Efficient mock chroot management
- * Seperate logfile for each compose
+ * Compose trees in a lightweight `systemd-nspawn <http://www.freedesktop.org/software/systemd/man/systemd-nspawn.html>`_ container
+ * Dynamic atomic `treefile <https://github.com/projectatomic/rpm-ostree/blob/master/doc/treefile.md>`_ generation
+ * Dynamic yum repo & mock configuration generation
+ * Seperate logfiles for each compose
  * Python API
  * A fedmsg consumer that can trigger composes when new repos are available
  * A simple `fedmsg-atomic-composer-cli` command-line interface
@@ -45,7 +44,6 @@ define all of your releases like so:
                 'arch': 'x86_64',
 
                 # Here you define your OSTree treefile configuration
-                # https://github.com/projectatomic/rpm-ostree/blob/master/doc/treefile.md
                 'tree': 'docker-host',
                 'treefile': {
                     'include': 'fedora-atomic-docker-host.json',
