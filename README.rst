@@ -73,6 +73,22 @@ Composing a tree via the CLI
    sudo -iu rpmostreecompose fedmsg-atomic-composer-cli f21-updates-testing
 
 
+Using the Python API
+--------------------
+
+To compose a tree via the Python API, all you need to do is pass the
+:meth:`compose` method a `release` dictionary from the `config.py`.
+
+.. code-block:: python
+
+   from fedmsg_atomic_composer.composer import AtomicComposer
+   from fedmsg_atomic_composer.config import config
+
+   release = config['releases']['f21-updates']
+   composer = AtomicComposer()
+   result = composer.compose(release)
+
+
 Build & Deploy locally
 ----------------------
 
