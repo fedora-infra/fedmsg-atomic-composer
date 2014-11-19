@@ -47,6 +47,9 @@ config = dict(
     log_dir='/srv/fedora-atomic/logs/{version}/{arch}/{repo}/{tree}',
     git_repo='https://git.fedorahosted.org/git/fedora-atomic.git',
 
+    # Mock command
+    mock_cmd='/usr/bin/mock --new-chroot -r {mock}',
+
     # OSTree commands
     ostree_init='/usr/bin/ostree --repo={output_dir} init --mode=archive-z2',
     ostree_compose='/usr/bin/rpm-ostree compose tree --workdir-tmpfs --repo={output_dir} %s',
@@ -67,8 +70,8 @@ config = dict(
     ],
 
     # Map and expand certain global variables to each release
-    map_to_release=('output_dir', 'log_dir', 'git_repo', 'ostree_init',
-                    'ostree_compose'),
+    map_to_release=('output_dir', 'log_dir', 'git_repo', 'mock_cmd',
+                    'ostree_init', 'ostree_compose'),
 )
 
 for key in config.get('map_to_release', []):

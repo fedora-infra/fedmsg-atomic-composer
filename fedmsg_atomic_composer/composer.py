@@ -94,11 +94,10 @@ class AtomicComposer(object):
             if repo not in release['repos']:
                 release['repos'][repo] = url.format(**release)
 
-    def mock_cmd(self, release, cmd):
+    def mock_cmd(self, release, *cmd):
         """Run a mock command in the chroot for a given release"""
-        cmd = isinstance(cmd, list) and cmd or [cmd]
-        self.call(['/usr/bin/mock', '--new-chroot', '-r', release['mock'],
-                   '--configdir=' + release['mock_dir']] + cmd)
+        self.call('{mock_cmd} --configdir={mock_dir}'.format(**release).split()
+                  + list(cmd))
 
     def init_mock(self, release):
         """Initialize/update our mock chroot"""
@@ -122,7 +121,7 @@ class AtomicComposer(object):
             cfg.write(Template(mock_tmpl).render(**release))
 
     def mock_chroot(self, release, cmd):
-        self.mock_cmd(release, ['--chroot', cmd])
+        self.mock_cmd(release, '--chroot', cmd)
 
     def generate_repo_files(self, release):
         """Dynamically generate our yum repo configuration"""
