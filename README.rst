@@ -51,7 +51,7 @@ define all of your releases like so:
                     'repos': ['fedora-21', 'updates'],
                 },
 
-                # The name of the mock chroot to build and maintain
+                # The name of the mock container to build and maintain
                 'mock': 'fedora-21-updates-x86_64',
 
                 # The git branch to use in the `git_repo` for the parent

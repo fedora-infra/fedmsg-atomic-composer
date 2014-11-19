@@ -5,20 +5,28 @@ config = dict(
             'repo': 'updates',
             'version': '21',
             'arch': 'x86_64',
+
+            # OSTree treefile configuration
+            # https://github.com/projectatomic/rpm-ostree/blob/master/doc/treefile.md
             'tree': 'docker-host',
             'treefile': {
                 'include': 'fedora-atomic-docker-host.json',
                 'ref': 'fedora-atomic/f21/x86_64/updates/docker-host',
                 'repos': ['fedora-21', 'updates'],
             },
+
+            # The name of the mock container to build and maintain
             'mock': 'fedora-21-updates-x86_64',
+
+            # The git branch to use in the `git_repo` for the parent
+            # treefile & repo configurations
             'git_branch': 'f21',
 
-            # Add additional, or overwrite yum repository urls.
-            # This is so tools like bodhi can point to their own
-            # local mashes when composing trees.
+            # Add or overwrite yum repository name:urls. This lets you
+            # compose trees against your own repositories.
             'repos': {},
         },
+
         'f21-updates-testing': {
             'name': 'f21-updates-testing',
             'repo': 'updates-testing',
@@ -29,7 +37,6 @@ config = dict(
                 'include': 'fedora-atomic-docker-host.json',
                 'ref': 'fedora-atomic/f21/x86_64/updates-testing/docker-host',
                 'repos': ['fedora-21', 'updates', 'updates-testing'],
-                'selinux': False,
             },
             'git_branch': 'f21',
             'mock': 'fedora-21-updates-testing-x86_64',
@@ -37,13 +44,17 @@ config = dict(
         },
     },
 
+    # Package repositories to use in the mock container and ostree compose
     repos={
         'updates': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
         'updates-testing': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
     },
 
+    # Output directories
     output_dir='/srv/fedora-atomic/{version}/{arch}/{repo}/{tree}',
     log_dir='/srv/fedora-atomic/logs/{version}/{arch}/{repo}/{tree}',
+
+    # The git repo containing our parent treefiles and yum repos
     git_repo='https://git.fedorahosted.org/git/fedora-atomic.git',
 
     # Mock command
