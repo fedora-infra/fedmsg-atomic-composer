@@ -26,19 +26,17 @@ baseurl=http://kojipkgs.fedoraproject.org/mash/branched/${arch}/os
 enabled=1
 cost=5000
 
-% if repo in ('updates', 'updates-testing'):
-[fedora-updates]
-name=fedora
-baseurl=http://kojipkgs.fedoraproject.org/mash/updates/${name}/${arch}
+% for repo_name, url in repos.items():
+% if repo_name == 'updates-testing':
+    % if repo != repo_name:
+        <% continue %>
+    % endif
+% endif
+[${repo_name}]
+name=Fedora ${version} ${repo_name}
+baseurl=${url}
 enabled=1
 cost=5000
-% endif
-
-% if repo == 'updates-testing':
-[fedora-updates-testing]
-name=fedora-updates-testing
-baseurl=http://kojipkgs.fedoraproject.org/mash/updates/${name}/${arch}
-enabled=1
-cost=5000
-% endif
+% endfor
 """
+config_opts['yum_common_opts'] = []
