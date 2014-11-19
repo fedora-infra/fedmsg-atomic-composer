@@ -154,8 +154,7 @@ class AtomicComposer(object):
     def update_ostree_summary(self, release):
         """Update the ostree summary file and return a path to it"""
         self.log.info('Updating the ostree summary for %s', release['name'])
-        cmd = 'ostree --repo=%s summary --update' % release['output_dir']
-        self.mock_chroot(release, cmd)
+        self.mock_chroot(release, release['ostree_summary'])
         return os.path.join(release['output_dir'], 'summary')
 
     def call(self, cmd, **kwargs):

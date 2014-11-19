@@ -48,8 +48,9 @@ config = dict(
     git_repo='https://git.fedorahosted.org/git/fedora-atomic.git',
 
     # OSTree commands
-    ostree_init='ostree --repo={output_dir} init --mode=archive-z2',
-    ostree_compose='rpm-ostree compose tree --workdir-tmpfs --repo={output_dir} %s',
+    ostree_init='/usr/bin/ostree --repo={output_dir} init --mode=archive-z2',
+    ostree_compose='/usr/bin/rpm-ostree compose tree --workdir-tmpfs --repo={output_dir} %s',
+    ostree_summary='/usr/bin/ostree --repo={output_dir} summary --update'
 
     # fedmsg-specific configuration
     fedmsg_atomic_composer=True,
