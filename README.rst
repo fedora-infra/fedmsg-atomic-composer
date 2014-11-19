@@ -4,6 +4,16 @@ fedmsg-atomic-composer
 Triggers `Atomic <http://projectatomic.io>`_ ostree composes when Fedora
 updates/rawhide/branched repositories are updated.
 
+Features
+--------
+
+ * Dynamic atomic treefile generation
+ * Dynamic yum repo configuration generation
+ * Dynamic mock configuration generation
+ * Efficient mock chroot management
+ * fedmsg-triggers
+ * Python API
+
 Bootstrap
 ---------
 
@@ -32,7 +42,6 @@ Monitor
 .. code-block:: bash
 
    journalctl -f -u fedmsg-atomic-composer -u atomic-compose\*
-
 
 Triggering locally
 ------------------
