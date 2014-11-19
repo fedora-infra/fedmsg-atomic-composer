@@ -17,6 +17,7 @@ BuildRequires:  python-mock
 Requires:       fedmsg-hub
 Requires:       rpm-ostree
 Requires:       python-mako
+Requires:       python-click
 
 # Version requirement for specifying a list of topics
 Requires:       python-moksha-hub >= 1.4.4
