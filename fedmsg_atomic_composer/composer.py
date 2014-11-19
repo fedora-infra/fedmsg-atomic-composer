@@ -18,6 +18,7 @@ import time
 import shutil
 import logging
 import tempfile
+import traceback
 import subprocess
 import pkg_resources
 
@@ -47,9 +48,11 @@ class AtomicComposer(object):
             self.cleanup(release)
             release['result'] = 'success'
         except:
-            self.log.exception('Compose failed')
+            if hasattr(self, 'log'):
+                self.log.exception('Compose failed')
+            else:
+                traceback.print_exc()
             release['result'] = 'failed'
-            self.log.error(release)
         return release
 
     def setup_logger(self, release):
