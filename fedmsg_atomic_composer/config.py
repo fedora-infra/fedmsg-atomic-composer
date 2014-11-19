@@ -46,7 +46,6 @@ config = dict(
     output_dir='/srv/fedora-atomic/{version}/{arch}/{repo}/{tree}',
     log_dir='/srv/fedora-atomic/logs/{version}/{arch}/{repo}/{tree}',
     git_repo='https://git.fedorahosted.org/git/fedora-atomic.git',
-    verbose=True,
 
     # fedmsg-specific configuration
     fedmsg_atomic_composer=True,
