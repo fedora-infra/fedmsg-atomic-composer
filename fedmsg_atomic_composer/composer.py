@@ -28,11 +28,6 @@ from .config import config
 class AtomicComposer(object):
     """An atomic ostree composer"""
 
-    def __init__(self, config, *args, **kw):
-        # Map all of the options from our config to ourself
-        for key, item in config.items():
-            setattr(self, key, item)
-
     def compose(self, release):
         self.update_configs(release)
         self.generate_mock_config(release)
