@@ -18,10 +18,10 @@ config = dict(
             'mock': 'fedora-21-updates-x86_64',
             'git_branch': 'f21',
 
-            # The path to the latest updates repo. We default to
-            # download.fedoraproject.org, but in production bodhi can overwrite
-            # this with it's own mash.
-            'mash_path': 'https://download.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
+            # Add additional, or overwrite yum repository urls.o
+            # This is so tools like bodhi can point to their own
+            # local mashes when composing trees.
+            'repos': {},
         },
         'f21-updates-testing': {
             'name': 'f21-updates-testing',
@@ -33,12 +33,25 @@ config = dict(
                 'include': 'fedora-atomic-docker-host.json',
                 'ref': 'fedora-atomic/f21/x86_64/updates-testing/docker-host',
                 'repos': ['fedora-21', 'updates', 'updates-testing'],
+                'selinux': False,
             },
-            'mock': 'fedora-21-updates-testing-x86_64',
             'git_branch': 'f21',
-            'mash_path': 'https://download.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
+            'mock': 'fedora-21-updates-testing-x86_64',
+            'repos': {},
         },
     },
+
+    repos={
+        'updates': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
+        'updates-testing': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
+    },
+
+    output_dir='/srv/fedora-atomic/{version}/{arch}/{repo}/{tree}',
+    log_dir='/srv/fedora-atomic/logs/{version}/{arch}/{repo}/{tree}',
+    git_repo='https://git.fedorahosted.org/git/fedora-atomic.git',
+    verbose=True,
+
+    # fedmsg-specific configuration
     fedmsg_atomic_composer=True,
     config_key='fedmsg_atomic_composer',
     topic=['org.fedoraproject.prod.bodhi.updates.fedora.sync',

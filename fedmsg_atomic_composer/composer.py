@@ -22,6 +22,8 @@ import pkg_resources
 from datetime import datetime
 from mako.template import Template
 
+from .config import config
+
 
 class AtomicComposer(object):
     """An atomic ostree composer"""
@@ -50,6 +52,11 @@ class AtomicComposer(object):
                 os.path.basename(self.git_repo))
         self.call(['git', 'clone', '-b', release['git_branch'],
                    self.git_repo, git_dir])
+
+    def update_repos(self, release):
+        for repo, url in config['repos'].items():
+            if repo not in release['repos']:
+                release['repos'][repo] = url.format(**release)
 
     def mock_cmd(self, release, cmd):
         """Run a mock command in the chroot for a given release"""
@@ -81,6 +88,14 @@ class AtomicComposer(object):
 
     def mock_shell(self, release, cmd):
         self.mock_cmd(release, ['--shell', cmd])
+
+    def generate_repo_files(self, release):
+        """Dynamically generate our yum repo configuration"""
+        repo_tmpl = pkg_resources.resource_string(__name__, 'templates/repo.mako')
+        repo_file = os.path.join(release['git_dir'], '%s.repo' % release['repo'])
+        with file(repo_file, 'w') as repo:
+            repo.write(Template(repo_tmpl).render(**release))
+        self.log.info('Wrote repo configuration to %s', repo_file)
 
     def ostree_init(self, release):
         base = os.path.dirname(release['output_dir'])
