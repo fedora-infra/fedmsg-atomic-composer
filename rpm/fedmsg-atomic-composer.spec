@@ -56,6 +56,7 @@ ln -sf %{python_sitelib}/%{modname}/config.py %{buildroot}%{_sysconfdir}/fedmsg.
 
 %files
 %doc README.rst LICENSE ansible
+%{_bindir}/%{name}-cli
 %{python_sitelib}/%{modname}/
 %{python_sitelib}/%{modname}*.egg-info
 %attr(755, rpmostreecompose, rpmostreecompose) /srv/fedora-atomic/
