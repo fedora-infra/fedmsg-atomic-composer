@@ -11,8 +11,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-import copy
-import tempfile
 import fedmsg.consumers
 
 from twisted.internet import reactor
@@ -66,11 +64,13 @@ class AtomicConsumer(fedmsg.consumers.FedmsgConsumer):
         else:
             self.log.warn('Unknown topic: %s', topic)
 
-        # Copy of the release dict and expand some paths
-        release = copy.deepcopy(self.releases[repo])
-        release['tmp_dir'] = tempfile.mkdtemp()
-        for key in ('output_dir', 'log_dir'):
-            release[key] = getattr(self, key).format(**release)
+        release = self.releases[repo]
+        reactor.callInThread(self.compose, release)
 
-        composer = AtomicComposer()
-        reactor.callInThread(composer.compose, release)
+    def compose(self, release):
+        self.composer = AtomicComposer()
+        result = self.composer.compose(release)
+        if result['result'] == 'success':
+            self.log.info(result)
+        else:
+            self.log.error(result)
