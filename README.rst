@@ -42,13 +42,13 @@ define all of your releases like so:
                 'version': '21',
                 'arch': 'x86_64',
 
-                # Here you define your OSTree `treefile.json <https://github.com/projectatomic/rpm-ostree/blob/master/doc/treefile.md>`_
+                # Here you define your OSTree treefile configuration
+                # https://github.com/projectatomic/rpm-ostree/blob/master/doc/treefile.md
                 'tree': 'docker-host',
                 'treefile': {
                     'include': 'fedora-atomic-docker-host.json',
                     'ref': 'fedora-atomic/f21/x86_64/updates/docker-host',
                     'repos': ['fedora-21', 'updates'],
-                    'selinux': False,
                 },
 
                 # The name of the mock chroot to build and maintain
@@ -58,7 +58,7 @@ define all of your releases like so:
                 # treefile & repo configurations
                 'git_branch': 'f21',
 
-                # Add or overwrite yum repository name:urls. This lets you 
+                # Add or overwrite yum repository name:urls. This lets you
                 # compose trees against your own repositories.
                 'repos': {},
             }, …
