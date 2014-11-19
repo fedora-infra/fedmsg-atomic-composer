@@ -121,6 +121,7 @@ class AtomicComposer(object):
             cfg.write(Template(mock_tmpl).render(**release))
 
     def mock_chroot(self, release, cmd):
+        """Run a commend in the mock container for a release"""
         self.mock_cmd(release, '--chroot', cmd)
 
     def generate_repo_files(self, release):
@@ -132,6 +133,7 @@ class AtomicComposer(object):
         self.log.info('Wrote repo configuration to %s', repo_file)
 
     def ostree_init(self, release):
+        """Initialize the OSTree for a release"""
         out = release['output_dir']
         base = os.path.dirname(out)
         if not os.path.isdir(base):
