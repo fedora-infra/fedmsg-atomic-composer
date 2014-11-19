@@ -42,8 +42,7 @@ define all of your releases like so:
                 'version': '21',
                 'arch': 'x86_64',
 
-                # Here you define your OSTree `treefile.json
-                <https://github.com/projectatomic/rpm-ostree/blob/master/doc/treefile.md>`_
+                # Here you define your OSTree `treefile.json <https://github.com/projectatomic/rpm-ostree/blob/master/doc/treefile.md>`_
                 'tree': 'docker-host',
                 'treefile': {
                     'include': 'fedora-atomic-docker-host.json',
