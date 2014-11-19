@@ -80,10 +80,11 @@ class AtomicComposer(object):
 
     def update_configs(self, release):
         """ Update the fedora-atomic.git repositories for a given release """
+        git_repo = release['git_repo']
         git_dir = release['git_dir'] = os.path.join(release['tmp_dir'],
-                os.path.basename(self.git_repo))
+                                                    os.path.basename(git_repo))
         self.call(['git', 'clone', '-b', release['git_branch'],
-                   self.git_repo, git_dir])
+                   git_repo, git_dir])
 
     def update_repos(self, release):
         for repo, url in config['repos'].items():
