@@ -121,8 +121,8 @@ class AtomicComposer(object):
         with file(mock_cfg, 'w') as cfg:
             cfg.write(Template(mock_tmpl).render(**release))
 
-    def mock_shell(self, release, cmd):
-        self.mock_cmd(release, ['--shell', cmd])
+    def mock_chroot(self, release, cmd):
+        self.mock_cmd(release, ['--chroot', cmd])
 
     def generate_repo_files(self, release):
         """Dynamically generate our yum repo configuration"""
@@ -139,7 +139,7 @@ class AtomicComposer(object):
             self.log.info('Creating %s', base)
             os.makedirs(base, mode=0755)
         if not os.path.isdir(out):
-            self.mock_shell(release, release['ostree_init'])
+            self.mock_chroot(release, release['ostree_init'])
 
     def ostree_compose(self, release):
         start = datetime.utcnow()
@@ -147,7 +147,7 @@ class AtomicComposer(object):
         cmd = release['ostree_compose'] % treefile
         with file(treefile, 'w') as tree:
             json.dump(release['treefile'], tree)
-        self.mock_shell(release, cmd)
+        self.mock_chroot(release, cmd)
         self.log.info('rpm-ostree compose complete (%s)',
                       datetime.utcnow() - start)
 
@@ -155,7 +155,7 @@ class AtomicComposer(object):
         """Update the ostree summary file and return a path to it"""
         self.log.info('Updating the ostree summary for %s', release['name'])
         cmd = 'ostree --repo=%s summary --update' % release['output_dir']
-        self.mock_shell(release, cmd)
+        self.mock_chroot(release, cmd)
         return os.path.join(release['output_dir'], 'summary')
 
     def call(self, cmd, **kwargs):
