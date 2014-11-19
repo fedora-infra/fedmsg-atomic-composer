@@ -149,6 +149,13 @@ class AtomicComposer(object):
         self.log.info('rpm-ostree compose complete (%s)',
                       datetime.utcnow() - start)
 
+    def update_ostree_summary(self, release):
+        """Update the ostree summary file and return a path to it"""
+        self.log.info('Updating the ostree summary for %s', release['name'])
+        cmd = 'ostree --repo=%s summary --update' % release['output_dir']
+        self.mock_shell(release, cmd)
+        return os.path.join(release['output_dir'], 'summary')
+
     def call(self, cmd, **kwargs):
         """A simple subprocess wrapper"""
         self.log.info('Running %s', cmd)
@@ -163,10 +170,3 @@ class AtomicComposer(object):
             self.log.error('returncode = %d' % p.returncode)
             raise Exception
         return out, err, p.returncode
-
-    def update_ostree_summary(self, release):
-        """Update the ostree summary file and return a path to it"""
-        self.log.info('Updating the ostree summary for %s', release['name'])
-        cmd = 'ostree --repo=%s summary --update' % release['output_dir']
-        self.mock_shell(release, cmd)
-        return os.path.join(release['output_dir'], 'summary')
