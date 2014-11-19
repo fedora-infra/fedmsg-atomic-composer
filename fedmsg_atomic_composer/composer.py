@@ -14,7 +14,9 @@
 import os
 import copy
 import json
+import time
 import shutil
+import logging
 import tempfile
 import subprocess
 import pkg_resources
@@ -29,13 +31,48 @@ class AtomicComposer(object):
     """An atomic ostree composer"""
 
     def compose(self, release):
-        self.update_configs(release)
-        self.generate_mock_config(release)
-        self.init_mock(release)
-        self.ostree_init(release)
-        self.ostree_compose(release)
-        self.update_ostree_summary(release)
-        self.cleanup(release)
+        release = copy.deepcopy(release)
+        release['tmp_dir'] = tempfile.mkdtemp()
+        release['timestamp'] = time.strftime('%y%m%d.%H%M')
+        try:
+            self.setup_logger(release)
+            self.update_configs(release)
+            self.update_repos(release)
+            self.generate_mock_config(release)
+            self.init_mock(release)
+            self.ostree_init(release)
+            self.generate_repo_files(release)
+            self.ostree_compose(release)
+            self.update_ostree_summary(release)
+            self.cleanup(release)
+            release['result'] = 'success'
+        except:
+            self.log.exception('Compose failed')
+            release['result'] = 'failed'
+            self.log.error(release)
+        return release
+
+    def setup_logger(self, release):
+        name = '{name}-{timestamp}'.format(**release)
+        logger = logging.getLogger(name)
+        logger.setLevel(logging.DEBUG)
+        log_dir = release['log_dir']
+        log_file = os.path.join(log_dir, name)
+        release['log_file'] = log_file
+        if not os.path.isdir(log_dir):
+            os.makedirs(log_dir)
+        stdout = logging.StreamHandler()
+        handler = logging.FileHandler(log_file)
+        log_format = ('%(asctime)s -  %(levelname)s - %(filename)s:'
+                      '%(module)s:%(lineno)d - %(message)s')
+        formatter = logging.Formatter(log_format)
+        handler.setFormatter(formatter)
+        handler.setLevel(logging.DEBUG)
+        stdout.setFormatter(formatter)
+        stdout.setLevel(logging.DEBUG)
+        logger.addHandler(handler)
+        logger.addHandler(stdout)
+        self.log = logger
 
     def cleanup(self, release):
         """Cleanup any temporary files after the compose"""
@@ -93,26 +130,22 @@ class AtomicComposer(object):
         self.log.info('Wrote repo configuration to %s', repo_file)
 
     def ostree_init(self, release):
-        base = os.path.dirname(release['output_dir'])
+        out = release['output_dir']
+        base = os.path.dirname(out)
         if not os.path.isdir(base):
             self.log.info('Creating %s', base)
             os.makedirs(base, mode=0755)
-        if not os.path.isdir(release['log_dir']):
-            os.makedirs(release['log_dir'])
-        out = os.path.join(base, release['tree'])
         if not os.path.isdir(out):
-            cmd = 'ostree init --repo=%s --mode=archive-z2 >%s 2>&1'
-            logfile = os.path.join(release['log_dir'], 'ostree.log')
-            self.mock_shell(release, cmd % (out, logfile))
+            cmd = 'ostree --repo=%s init --mode=archive-z2'
+            self.mock_shell(release, cmd % out)
 
     def ostree_compose(self, release):
-        logfile = os.path.join(release['log_dir'], 'rpm-ostree.log')
         start = datetime.utcnow()
-        cmd = 'rpm-ostree compose tree --repo=%s %s >%s 2>&1'
+        cmd = 'rpm-ostree compose tree --repo=%s %s'
         treefile = os.path.join(release['git_dir'], 'treefile.json')
         with file(treefile, 'w') as tree:
             json.dump(release['treefile'], tree)
-        self.mock_shell(release, cmd % (release['output_dir'], treefile, logfile))
+        self.mock_shell(release, cmd % (release['output_dir'], treefile))
         self.log.info('rpm-ostree compose complete (%s)',
                       datetime.utcnow() - start)
 
