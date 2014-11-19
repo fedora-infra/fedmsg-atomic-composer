@@ -1,9 +1,6 @@
 config = dict(
+    # Repos to compose
     releases={
-        # {'name': 'rawhide', 'repo': 'rawhide', 'version': 'development',
-        # 'tree': 'docker-host'},
-        # {'name': 'f21-gold', 'repo': 'gold', 'version': '21', 'arch':
-        # 'x86_64', 'tree': 'docker-host', 'mock': 'fedora-21-x86_64'},
         'f21-updates': {
             'name': 'f21-updates',
             'repo': 'updates',
