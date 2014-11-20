@@ -25,8 +25,6 @@ import pkg_resources
 from datetime import datetime
 from mako.template import Template
 
-from .config import config
-
 
 class AtomicComposer(object):
     """An atomic ostree composer"""
@@ -38,7 +36,6 @@ class AtomicComposer(object):
         try:
             self.setup_logger(release)
             self.update_configs(release)
-            self.update_repos(release)
             self.generate_mock_config(release)
             self.init_mock(release)
             self.ostree_init(release)
@@ -88,11 +85,6 @@ class AtomicComposer(object):
                                                     os.path.basename(git_repo))
         self.call(['git', 'clone', '-b', release['git_branch'],
                    git_repo, git_dir])
-
-    def update_repos(self, release):
-        for repo, url in config['repos'].items():
-            if repo not in release['repos']:
-                release['repos'][repo] = url.format(**release)
 
     def mock_cmd(self, release, *cmd):
         """Run a mock command in the chroot for a given release"""

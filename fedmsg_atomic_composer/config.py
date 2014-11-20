@@ -81,9 +81,15 @@ config = dict(
 
     # Map and expand certain global variables to each release
     map_to_release=('output_dir', 'log_dir', 'git_repo', 'mock_cmd',
-                    'ostree_init', 'ostree_compose', 'ostree_summary'),
+                    'ostree_init', 'ostree_compose', 'ostree_summary',
+                    'repos'),
 )
 
 for key in config.get('map_to_release', []):
     for name, release in config['releases'].items():
-        release[key] = config[key].format(**release)
+        if isinstance(config[key], dict):
+            release[key] = {}
+            for k, v in config[key].items():
+                release[key][k] = v.format(**release)
+        else:
+            release[key] = config[key].format(**release)
