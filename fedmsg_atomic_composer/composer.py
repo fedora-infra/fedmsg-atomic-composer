@@ -64,7 +64,7 @@ class AtomicComposer(object):
         stdout = logging.StreamHandler()
         handler = logging.FileHandler(log_file)
         log_format = ('%(asctime)s -  %(levelname)s - %(filename)s:'
-                      '%(module)s:%(lineno)d - %(message)s')
+                      '%(lineno)d - %(message)s')
         formatter = logging.Formatter(log_format)
         handler.setFormatter(formatter)
         handler.setLevel(logging.DEBUG)
