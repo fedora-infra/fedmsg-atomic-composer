@@ -23,15 +23,15 @@ updates/rawhide/branched repositories sync with the master mirror, and
 then triggers Atomic OSTree composes.
 
 %package consumer
-Summary:        fedmsg-driven atomic tree composer
+Summary:        A fedmsg-driven atomic tree composer
 
 # Version requirement for specifying a list of topics
 Requires:       python-moksha-hub >= 1.4.4
 Requires:       fedmsg-hub
 
 %description consumer
-This subpackage contains a fedmsg consumer that triggers Atomic tree composes
-when new Fedora repos sync to the master mirror.
+This sub-package contains a fedmsg consumer that triggers Atomic tree composes
+when new Fedora repositories sync to the master mirror.
 
 %prep
 %setup -q
