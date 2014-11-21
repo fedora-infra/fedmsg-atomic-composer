@@ -107,6 +107,9 @@ Enable & Monitor the fedmsg consumer
 Triggering locally via fedmsg
 -----------------------------
 
+:note: This requires having the `fedmsg-relay` package installed and the
+       service running.
+
 .. code-block:: bash
 
    fedmsg-logger --modname 'bodhi' --topic 'updates.fedora.sync' --message='{"release": "21", "repo": "updates"}' --json-input
