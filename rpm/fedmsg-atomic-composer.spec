@@ -41,17 +41,16 @@ when new Fedora repos sync to the master mirror.
 %{__python} setup.py build
 
 
-#%check
-#%{__python} test.py
-
-
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
-install -D -m644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 mkdir -p %{buildroot}/srv/fedora-atomic/
 
 mkdir -p %{buildroot}%{_sysconfdir}/fedmsg.d
 ln -sf %{python_sitelib}/%{modname}/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
+
+%if 0%{?rhel} && 0%{?rhel} <= 6
+install -D -m644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
+%endif
 
 %files
 %doc README.rst LICENSE ansible
@@ -62,7 +61,9 @@ ln -sf %{python_sitelib}/%{modname}/config.py %{buildroot}%{_sysconfdir}/fedmsg.
 
 %files consumer
 %config(noreplace) %{_sysconfdir}/fedmsg.d/%{modname}.py*
+%if 0%{?rhel} && 0%{?rhel} <= 6
 %{_unitdir}/%{name}.service
+%endif
 
 
 %changelog
