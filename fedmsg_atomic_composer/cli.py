@@ -12,29 +12,51 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import click
+import time
+import tempfile
 
 from fedmsg_atomic_composer.composer import AtomicComposer
 from fedmsg_atomic_composer.config import config
 
-
-@click.command()
-@click.argument('release')
-def compose(release):
+def get_release(release):
     releases = config['releases']
     if release not in releases:
-        click.echo('Unknown release. Valid releases are: %s' % releases.keys())
-        return
+        raise click.BadParameter('Unknown release. Valid releases are: %s' %
+                                 releases.keys())
+    return releases[release]
 
-    release = releases[release]
+
+@click.group()
+def cli():
+    pass
+
+
+@cli.command(help='Compose an ostree for a given release')
+@click.argument('release')
+def compose(release):
+    release = get_release(release)
     composer = AtomicComposer()
     result = composer.compose(release)
     if result['result'] == 'success':
         click.echo('{name} tree successfuly composed'.format(**result))
     else:
         click.echo('{name} tree compose failed'.format(**result))
+        click.echo(str(result))
 
     click.echo('Log: {log_file}'.format(**result))
 
 
+@cli.command()
+@click.argument('release')
+def clean(release):
+    release = get_release(release)
+    composer = AtomicComposer()
+    release['tmp_dir'] = tempfile.mkdtemp()
+    release['timestamp'] = time.strftime('%y%m%d.%H%M')
+    composer.setup_logger(release)
+    composer.generate_mock_config(release)
+    composer.mock_cmd(release, '--clean')
+
+
 if __name__ == '__main__':
-    compose()
+    cli()
