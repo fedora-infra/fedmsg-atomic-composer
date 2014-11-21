@@ -45,8 +45,7 @@ when new Fedora repositories sync to the master mirror.
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
 mkdir -p %{buildroot}/srv/fedora-atomic/
 
-mkdir -p %{buildroot}%{_sysconfdir}/fedmsg.d
-ln -sf %{python_sitelib}/%{modname}/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
+install -D -m644 fedmsg.d/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
 
 %if 0%{?rhel} && 0%{?rhel} <= 6
 install -D -m644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service

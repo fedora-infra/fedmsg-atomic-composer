@@ -65,21 +65,6 @@ config = dict(
     ostree_compose='/usr/bin/rpm-ostree compose tree --workdir-tmpfs --repo={output_dir} %s',
     ostree_summary='/usr/bin/ostree --repo={output_dir} summary --update',
 
-    # fedmsg-specific configuration
-    fedmsg_atomic_composer=True,
-    config_key='fedmsg_atomic_composer',
-    topic=['org.fedoraproject.prod.bodhi.updates.fedora.sync',
-           'org.fedoraproject.prod.compose.branched.rsync.complete',
-           'org.fedoraproject.prod.compose.rawhide.rsync.complete',
-           'org.fedoraproject.stg.bodhi.updates.fedora.sync',
-           'org.fedoraproject.stg.compose.branched.rsync.complete',
-           'org.fedoraproject.stg.compose.rawhide.rsync.complete',
-           'org.fedoraproject.dev.bodhi.updates.fedora.sync',
-           'org.fedoraproject.dev.compose.branched.rsync.complete',
-           'org.fedoraproject.dev.compose.rawhide.rsync.complete'
-    ],
-
-    # Map and expand certain global variables to each release
     map_to_release=('output_dir', 'log_dir', 'git_repo', 'mock_cmd',
                     'ostree_init', 'ostree_compose', 'ostree_summary',
                     'repos'),
