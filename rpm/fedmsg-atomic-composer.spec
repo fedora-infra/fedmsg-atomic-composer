@@ -12,15 +12,10 @@ BuildArch:      noarch
 
 BuildRequires:  python-devel
 BuildRequires:  python-setuptools
-BuildRequires:  python-mock
 
-Requires:       fedmsg-hub
-Requires:       rpm-ostree
+Requires:       mock
 Requires:       python-mako
 Requires:       python-click
-
-# Version requirement for specifying a list of topics
-Requires:       python-moksha-hub >= 1.4.4
 
 %description
 This is a Fedmsg consumer that listens for when the Fedora
@@ -29,6 +24,10 @@ then triggers Atomic OSTree composes.
 
 %package consumer
 Summary:        fedmsg-driven atomic tree composer
+
+# Version requirement for specifying a list of topics
+Requires:       python-moksha-hub >= 1.4.4
+Requires:       fedmsg-hub
 
 %description consumer
 This subpackage contains a fedmsg consumer that triggers Atomic tree composes
