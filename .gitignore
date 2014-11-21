@@ -1,4 +1,4 @@
 *.py[co]
-*.sw[po]
+*.sw*
 *.egg-info
 dist
