@@ -29,7 +29,7 @@ cost=5000
 % for repo_name, url in repos.items():
 % if repo_name == 'updates-testing':
     % if repo != repo_name:
-        <% continue %>
+<% continue %>
     % endif
 % endif
 [${repo_name}]
