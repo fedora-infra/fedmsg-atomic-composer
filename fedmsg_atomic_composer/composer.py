@@ -42,7 +42,6 @@ class AtomicComposer(object):
             self.generate_repo_files(release)
             self.ostree_compose(release)
             self.update_ostree_summary(release)
-            self.cleanup(release)
             release['result'] = 'success'
         except:
             if hasattr(self, 'log'):
@@ -50,6 +49,8 @@ class AtomicComposer(object):
             else:
                 traceback.print_exc()
             release['result'] = 'failed'
+        finally:
+            self.cleanup(release)
         return release
 
     def setup_logger(self, release):
