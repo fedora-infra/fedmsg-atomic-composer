@@ -38,10 +38,12 @@ class AtomicComposer(object):
             self.update_configs(release)
             self.generate_mock_config(release)
             self.init_mock(release)
+            self.sync_in(release)
             self.ostree_init(release)
             self.generate_repo_files(release)
             self.ostree_compose(release)
             self.update_ostree_summary(release)
+            self.sync_out(release)
             release['result'] = 'success'
         except:
             if hasattr(self, 'log'):
@@ -152,8 +154,26 @@ class AtomicComposer(object):
         self.mock_chroot(release, release['ostree_summary'])
         return os.path.join(release['output_dir'], 'summary')
 
+    def sync_in(self, release):
+        """Sync the canonical repo to our local working directory"""
+        tree = release['canonical_dir']
+        if os.path.exists(tree):
+            self.call(release['rsync_in'])
+
+    def sync_out(self, release):
+        """Sync our tree to the canonical location"""
+        tree = release['canonical_dir']
+        if tree:
+            parent = os.path.dirname(tree)
+            if not os.path.isdir(parent):
+                self.log.info('Creating %s', parent)
+                os.makedirs(parent)
+            self.call(release['rsync_out'])
+
     def call(self, cmd, **kwargs):
         """A simple subprocess wrapper"""
+        if isinstance(cmd, basestring):
+            cmd = cmd.split()
         self.log.info('Running %s', cmd)
         p = subprocess.Popen(cmd, stdout=subprocess.PIPE,
                              stderr=subprocess.PIPE, **kwargs)

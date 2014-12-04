@@ -17,6 +17,7 @@ Features
  * Python API
  * A fedmsg consumer that can trigger composes when new repos are available
  * A simple `fedmsg-atomic-composer-cli` command-line interface
+ * Ability to rsync trees locally and remotely
 
 Bootstrap
 ---------

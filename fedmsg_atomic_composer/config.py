@@ -51,8 +51,10 @@ config = dict(
     },
 
     # Output directories
-    output_dir='/srv/fedora-atomic/{version}/{arch}/{repo}/{tree}',
-    log_dir='/srv/fedora-atomic/logs/{version}/{arch}/{repo}/{tree}',
+    base_dir='/srv/fedora-atomic',
+    canonical_dir='{base_dir}/production/{version}/{arch}/{repo}/{tree}/',
+    output_dir='{base_dir}/{version}/{arch}/{repo}/{tree}/',
+    log_dir='{base_dir}/logs/{version}/{arch}/{repo}/{tree}',
 
     # The git repo containing our parent treefiles and yum repos
     git_repo='https://git.fedorahosted.org/git/fedora-atomic.git',
@@ -65,11 +67,17 @@ config = dict(
     ostree_compose='/usr/bin/rpm-ostree compose tree --workdir-tmpfs --repo={output_dir} %s',
     ostree_summary='/usr/bin/ostree --repo={output_dir} summary --update',
 
-    map_to_release=('output_dir', 'log_dir', 'git_repo', 'mock_cmd',
-                    'ostree_init', 'ostree_compose', 'ostree_summary',
-                    'repos'),
+    # rsync commands
+    rsync_in='/usr/bin/rsync -ave ssh {canonical_dir} {output_dir}',
+    rsync_out='/usr/bin/rsync -ave ssh {output_dir} {canonical_dir}',
+
+    map_to_release=('base_dir', 'output_dir', 'log_dir', 'git_repo',
+                    'git_cache', 'mock_cmd', 'ostree_init', 'ostree_compose',
+                    'ostree_summary', 'canonical_dir', 'repos', 'rsync_in',
+                    'rsync_out'),
 )
 
+# Map and expand certain variables to each release
 for key in config.get('map_to_release', []):
     for name, release in config['releases'].items():
         if isinstance(config[key], dict):
