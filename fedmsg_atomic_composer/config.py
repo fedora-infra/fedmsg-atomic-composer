@@ -58,6 +58,7 @@ config = dict(
 
     # The git repo containing our parent treefiles and yum repos
     git_repo='https://git.fedorahosted.org/git/fedora-atomic.git',
+    git_cache='{base_dir}/fedora-atomic.git',
 
     # Mock command
     mock_cmd='/usr/bin/mock --new-chroot -r {mock}',
