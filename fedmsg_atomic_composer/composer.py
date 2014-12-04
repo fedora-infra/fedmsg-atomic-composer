@@ -88,7 +88,7 @@ class AtomicComposer(object):
         if not os.path.isdir(git_cache):
             self.call(['git', 'clone', '--mirror', git_repo, git_cache])
         else:
-            self.call(['git', 'pull'], cwd=git_cache)
+            self.call(['git', 'fetch', '--all', '--prune'], cwd=git_cache)
         git_dir = release['git_dir'] = os.path.join(release['tmp_dir'],
                                                     os.path.basename(git_repo))
         self.call(['git', 'clone', '-b', release['git_branch'],
