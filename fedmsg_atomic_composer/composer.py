@@ -134,7 +134,7 @@ class AtomicComposer(object):
 
     def ostree_init(self, release):
         """Initialize the OSTree for a release"""
-        out = release['output_dir']
+        out = release['output_dir'].rstrip('/')
         base = os.path.dirname(out)
         if not os.path.isdir(base):
             self.log.info('Creating %s', base)
