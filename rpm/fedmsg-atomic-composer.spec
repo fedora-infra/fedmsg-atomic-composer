@@ -47,7 +47,7 @@ mkdir -p %{buildroot}/srv/fedora-atomic/
 
 install -D -m644 fedmsg.d/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
 
-%if 0%{?rhel} && 0%{?rhel} <= 6
+%if 0%{?rhel} && 0%{?rhel} > 6
 install -D -m644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 %endif
 
@@ -60,7 +60,7 @@ install -D -m644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 
 %files consumer
 %config(noreplace) %{_sysconfdir}/fedmsg.d/%{modname}.py*
-%if 0%{?rhel} && 0%{?rhel} <= 6
+%if 0%{?rhel} && 0%{?rhel} > 6
 %{_unitdir}/%{name}.service
 %endif
 
