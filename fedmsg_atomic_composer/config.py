@@ -51,8 +51,6 @@ config = dict(
 
     # Package repositories to use in the mock container and ostree compose
     repos={
-        #'updates': 'http://download01.phx2.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
-        #'updates-testing': 'http://download01.phx2.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
         'updates': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
         'updates-testing': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
     },
