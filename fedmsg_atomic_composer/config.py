@@ -58,7 +58,7 @@ config = dict(
     # Output directories
     work_dir='/srv/fedora-atomic',
     prod_dir='{work_dir}/production',
-    canonical_dir='{prod_dir}/production/{version}/{arch}/{repo}/{tree}',
+    canonical_dir='{prod_dir}/{version}/{arch}/{repo}/{tree}',
     output_dir='{work_dir}/{version}/{arch}/{repo}/{tree}',
     log_dir='{work_dir}/logs/{version}/{arch}/{repo}/{tree}',
 
