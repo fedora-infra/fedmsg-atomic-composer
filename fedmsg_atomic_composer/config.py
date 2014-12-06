@@ -1,3 +1,8 @@
+# Check if we're running on RHEL6
+import platform
+dist = platform.dist()
+rhel6 = dist[0] == 'redhat' and int(float(dist[1])) == 6
+
 config = dict(
     releases={
         'f21-updates': {
@@ -61,11 +66,12 @@ config = dict(
     git_cache='{base_dir}/fedora-atomic.git',
 
     # Mock command
-    mock_cmd='/usr/bin/mock --new-chroot -r {mock}',
+    mock_cmd='/usr/bin/mock %s-r {mock}' % (rhel6 and '' or '--new-chroot '),
 
     # OSTree commands
     ostree_init='/usr/bin/ostree --repo={output_dir} init --mode=archive-z2',
-    ostree_compose='/usr/bin/rpm-ostree compose tree --workdir-tmpfs --repo={output_dir} %s',
+    ostree_compose='/usr/bin/rpm-ostree compose tree ' +
+            (rhel6 and '' or '--workdir-tmpfs ') + '--repo={output_dir} %s',
     ostree_summary='/usr/bin/ostree --repo={output_dir} summary --update',
 
     # rsync commands
