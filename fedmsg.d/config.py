@@ -1,7 +1,7 @@
 config = dict(
     fedmsg_atomic_composer=True,
     config_key='fedmsg_atomic_composer',
-    topic=[
+    fedmsg_atomic_topic=[
         'org.fedoraproject.prod.bodhi.updates.fedora.sync',
         'org.fedoraproject.prod.compose.branched.rsync.complete',
         'org.fedoraproject.prod.compose.rawhide.rsync.complete',

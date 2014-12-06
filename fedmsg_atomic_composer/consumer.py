@@ -29,6 +29,8 @@ class AtomicConsumer(fedmsg.consumers.FedmsgConsumer):
         for key, item in hub.config.items():
             setattr(self, key, item)
 
+        self.topic = self.fedmsg_atomic_topic
+
         super(AtomicConsumer, self).__init__(hub, *args, **kw)
 
     def consume(self, msg):
