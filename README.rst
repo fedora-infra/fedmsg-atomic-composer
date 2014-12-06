@@ -77,7 +77,7 @@ Composing a tree via the CLI
 
 .. code-block:: bash
 
-   sudo -iu rpmostreecompose fedmsg-atomic-composer-cli f21-updates-testing
+   sudo -iu rpmostreecompose fedmsg-atomic-composer-cli compose f21-updates-testing
 
 
 Using the Python API
