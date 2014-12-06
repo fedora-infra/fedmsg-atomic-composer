@@ -76,13 +76,16 @@ config = dict(
     ostree_summary='/usr/bin/ostree --repo={output_dir} summary --update',
 
     # rsync commands
-    rsync_in='/usr/bin/rsync -ave ssh {canonical_dir}/ {output_dir}/',
-    rsync_out='/usr/bin/rsync -ave ssh {output_dir}/ {canonical_dir}/',
+    rsync_in_1='/usr/bin/rsync -rvp --ignore-existing {canonical_dir}/objects/ {output_dir}/objects/',
+    rsync_in_2='/usr/bin/rsync -rvp --exclude=objects/ {canonical_dir}/ {output_dir}/',
+    rsync_out_1='/usr/bin/rsync -rvp --ignore-existing {output_dir}/objects/ {canonical_dir}/objects/',
+    rsync_out_2='/usr/bin/rsync -rvp --exclude=objects/ {output_dir}/ {canonical_dir}/',
 
-    map_to_release=('work_dir', 'prod_dir', 'output_dir', 'log_dir', 'git_repo',
-                    'git_cache', 'mock_cmd', 'ostree_init', 'ostree_compose',
-                    'ostree_summary', 'canonical_dir', 'repos', 'rsync_in',
-                    'rsync_out'),
+    map_to_release=('work_dir', 'prod_dir', 'output_dir', 'log_dir',
+                    'git_repo', 'git_cache', 'mock_cmd', 'ostree_init',
+                    'ostree_compose', 'ostree_summary', 'canonical_dir',
+                    'repos', 'rsync_in_1', 'rsync_in_2', 'rsync_out_1',
+                    'rsync_out_2'),
 )
 
 # Map and expand certain variables to each release

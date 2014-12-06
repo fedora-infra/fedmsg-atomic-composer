@@ -163,17 +163,19 @@ class AtomicComposer(object):
         """Sync the canonical repo to our local working directory"""
         tree = release['canonical_dir']
         if os.path.exists(tree):
-            self.call(release['rsync_in'])
+            self.call(release['rsync_in_1'])
+            self.call(release['rsync_in_2'])
 
     def sync_out(self, release):
         """Sync our tree to the canonical location"""
         tree = release['canonical_dir']
         if tree:
-            parent = os.path.dirname(tree)
-            if not os.path.isdir(parent):
-                self.log.info('Creating %s', parent)
-                os.makedirs(parent)
-            self.call(release['rsync_out'])
+            objects = os.path.join(tree, 'objects')
+            if not os.path.isdir(objects):
+                self.log.info('Creating %s', objects)
+                os.makedirs(objects)
+            self.call(release['rsync_out_1'])
+            self.call(release['rsync_out_2'])
 
     def call(self, cmd, **kwargs):
         """A simple subprocess wrapper"""
