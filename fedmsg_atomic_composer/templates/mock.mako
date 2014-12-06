@@ -20,12 +20,6 @@ gpgcheck=0
 assumeyes=1
 metadata_expire=0
 
-[fedora]
-name=fedora
-baseurl=http://kojipkgs.fedoraproject.org/mash/branched/${arch}/os
-enabled=1
-cost=5000
-
 % for repo_name, url in repos.items():
 % if repo_name == 'updates-testing':
     % if repo != repo_name:
