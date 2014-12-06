@@ -5,7 +5,7 @@ config_opts['releasever'] = '${version}'
 config_opts['chroot_setup_cmd'] = 'install yum rpm-ostree'
 config_opts['extra_chroot_dirs'] = ['/run/lock']
 config_opts['plugin_conf']['bind_mount_enable'] = True
-config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('/srv/fedora-atomic', '/srv/fedora-atomic'))
+config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('${work_dir}', '${work_dir}'))
 config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('${tmp_dir}', '${tmp_dir}'))
 
 config_opts['yum.conf'] = """

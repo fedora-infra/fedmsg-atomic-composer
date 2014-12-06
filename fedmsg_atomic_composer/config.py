@@ -51,19 +51,22 @@ config = dict(
 
     # Package repositories to use in the mock container and ostree compose
     repos={
+        #'updates': 'http://download01.phx2.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
+        #'updates-testing': 'http://download01.phx2.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
         'updates': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
         'updates-testing': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
     },
 
     # Output directories
-    base_dir='/srv/fedora-atomic',
-    canonical_dir='{base_dir}/production/{version}/{arch}/{repo}/{tree}/',
-    output_dir='{base_dir}/{version}/{arch}/{repo}/{tree}/',
-    log_dir='{base_dir}/logs/{version}/{arch}/{repo}/{tree}',
+    work_dir='/srv/fedora-atomic',
+    prod_dir='{work_dir}/production',
+    canonical_dir='{prod_dir}/production/{version}/{arch}/{repo}/{tree}',
+    output_dir='{work_dir}/{version}/{arch}/{repo}/{tree}',
+    log_dir='{work_dir}/logs/{version}/{arch}/{repo}/{tree}',
 
     # The git repo containing our parent treefiles and yum repos
     git_repo='https://git.fedorahosted.org/git/fedora-atomic.git',
-    git_cache='{base_dir}/fedora-atomic.git',
+    git_cache='{work_dir}/fedora-atomic.git',
 
     # Mock command
     mock_cmd='/usr/bin/mock %s-r {mock}' % (rhel6 and '' or '--new-chroot '),
@@ -78,7 +81,7 @@ config = dict(
     rsync_in='/usr/bin/rsync -ave ssh {canonical_dir} {output_dir}',
     rsync_out='/usr/bin/rsync -ave ssh {output_dir} {canonical_dir}',
 
-    map_to_release=('base_dir', 'output_dir', 'log_dir', 'git_repo',
+    map_to_release=('work_dir', 'prod_dir', 'output_dir', 'log_dir', 'git_repo',
                     'git_cache', 'mock_cmd', 'ostree_init', 'ostree_compose',
                     'ostree_summary', 'canonical_dir', 'repos', 'rsync_in',
                     'rsync_out'),
