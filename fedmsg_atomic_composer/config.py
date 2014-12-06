@@ -78,8 +78,8 @@ config = dict(
     ostree_summary='/usr/bin/ostree --repo={output_dir} summary --update',
 
     # rsync commands
-    rsync_in='/usr/bin/rsync -ave ssh {canonical_dir} {output_dir}',
-    rsync_out='/usr/bin/rsync -ave ssh {output_dir} {canonical_dir}',
+    rsync_in='/usr/bin/rsync -ave ssh {canonical_dir}/ {output_dir}/',
+    rsync_out='/usr/bin/rsync -ave ssh {output_dir}/ {canonical_dir}/',
 
     map_to_release=('work_dir', 'prod_dir', 'output_dir', 'log_dir', 'git_repo',
                     'git_cache', 'mock_cmd', 'ostree_init', 'ostree_compose',
