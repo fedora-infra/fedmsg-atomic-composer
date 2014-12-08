@@ -16,9 +16,8 @@
     - authorized_key: user={{ user['name'] }}
                       key="{{ user['ssh_public_key'] }}"
 
-    - file: path=/srv/fedora-atomic/output
+    - file: path=/srv/fedora-atomic/
             owner={{ user['name'] }} group={{ user['name'] }} mode=755 state=directory
 
-    - service: name=fedmsg-atomic-composer enabled=yes state=restarted
-
-    - service: name=fedmsg-relay enabled=yes state=started
+#    - service: name=fedmsg-atomic-composer enabled=yes state=restarted
+#    - service: name=fedmsg-relay enabled=yes state=started
