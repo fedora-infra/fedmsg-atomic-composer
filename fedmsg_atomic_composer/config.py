@@ -1,4 +1,5 @@
-# Check if we're running on RHEL6
+# Check if we're running on RHEL6 and disable
+# `mock --new-chroot` and `rpm-ostree --workdir-tmpfs`
 import platform
 dist = platform.dist()
 rhel6 = dist[0] == 'redhat' and int(float(dist[1])) == 6
