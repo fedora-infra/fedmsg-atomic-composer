@@ -18,7 +18,7 @@ config = dict(
             'treefile': {
                 'include': 'fedora-atomic-docker-host.json',
                 'ref': 'fedora-atomic/f21/x86_64/updates/docker-host',
-                'repos': ['fedora-21', 'updates'],
+                'repos': ['fedora', 'updates'],
             },
 
             # The name of the mock container to build and maintain
@@ -42,7 +42,7 @@ config = dict(
             'treefile': {
                 'include': 'fedora-atomic-docker-host.json',
                 'ref': 'fedora-atomic/f21/x86_64/updates-testing/docker-host',
-                'repos': ['fedora-21', 'updates', 'updates-testing'],
+                'repos': ['fedora', 'updates', 'updates-testing'],
             },
             'git_branch': 'f21',
             'mock': 'fedora-21-updates-testing-x86_64',
@@ -52,6 +52,7 @@ config = dict(
 
     # Package repositories to use in the mock container and ostree compose
     repos={
+        'fedora': 'https://dl.fedoraproject.org/pub/fedora/linux/releases/{version}/Everything/{arch}/os/',
         'updates': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
         'updates-testing': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
     },
