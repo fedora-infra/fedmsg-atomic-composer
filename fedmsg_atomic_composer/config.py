@@ -85,8 +85,8 @@ config = dict(
     map_to_release=('work_dir', 'prod_dir', 'output_dir', 'log_dir',
                     'git_repo', 'git_cache', 'mock_cmd', 'ostree_init',
                     'ostree_compose', 'ostree_summary', 'canonical_dir',
-                    'repos', 'rsync_in_1', 'rsync_in_2', 'rsync_out_1',
-                    'rsync_out_2'),
+                    'repos', 'rsync_in_objs', 'rsync_in_rest', 'rsync_out_objs',
+                    'rsync_out_rest'),
 )
 
 # Map and expand certain variables to each release
