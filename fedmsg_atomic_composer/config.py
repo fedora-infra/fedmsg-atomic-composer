@@ -18,7 +18,7 @@ config = dict(
             'treefile': {
                 'include': 'fedora-atomic-docker-host.json',
                 'ref': 'fedora-atomic/f21/x86_64/updates/docker-host',
-                'repos': ['fedora-21', 'updates'],
+                'repos': ['fedora', 'updates'],
             },
 
             # The name of the mock container to build and maintain
@@ -42,7 +42,7 @@ config = dict(
             'treefile': {
                 'include': 'fedora-atomic-docker-host.json',
                 'ref': 'fedora-atomic/f21/x86_64/updates-testing/docker-host',
-                'repos': ['fedora-21', 'updates', 'updates-testing'],
+                'repos': ['fedora', 'updates', 'updates-testing'],
             },
             'git_branch': 'f21',
             'mock': 'fedora-21-updates-testing-x86_64',
@@ -52,6 +52,7 @@ config = dict(
 
     # Package repositories to use in the mock container and ostree compose
     repos={
+        'fedora': 'https://dl.fedoraproject.org/pub/fedora/linux/releases/{version}/Everything/{arch}/os/',
         'updates': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
         'updates-testing': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
     },
@@ -62,6 +63,9 @@ config = dict(
     canonical_dir='{prod_dir}/{version}/{arch}/{repo}/{tree}',
     output_dir='{work_dir}/{version}/{arch}/{repo}/{tree}',
     log_dir='{work_dir}/logs/{version}/{arch}/{repo}/{tree}',
+
+    # A list of other directories to mount in the mock container
+    mount_dirs=[],
 
     # The git repo containing our parent treefiles and yum repos
     git_repo='https://git.fedorahosted.org/git/fedora-atomic.git',
@@ -85,8 +89,8 @@ config = dict(
     map_to_release=('work_dir', 'prod_dir', 'output_dir', 'log_dir',
                     'git_repo', 'git_cache', 'mock_cmd', 'ostree_init',
                     'ostree_compose', 'ostree_summary', 'canonical_dir',
-                    'repos', 'rsync_in_1', 'rsync_in_2', 'rsync_out_1',
-                    'rsync_out_2'),
+                    'repos', 'rsync_in_objs', 'rsync_in_rest', 'rsync_out_objs',
+                    'rsync_out_rest', 'mount_dirs'),
 )
 
 # Map and expand certain variables to each release
@@ -96,5 +100,9 @@ for key in config.get('map_to_release', []):
             release[key] = {}
             for k, v in config[key].items():
                 release[key][k] = v.format(**release)
+        elif isinstance(config[key], (list, tuple)):
+            release[key] = []
+            for item in config[key]:
+                release[key].append(item.format(**release))
         else:
             release[key] = config[key].format(**release)
