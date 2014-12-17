@@ -173,11 +173,7 @@ class AtomicComposer(object):
     def sync_out(self, release):
         """Sync our tree to the canonical location"""
         tree = release['canonical_dir']
-        if tree:
-            objects = os.path.join(tree, 'objects')
-            if not os.path.isdir(objects):
-                self.log.info('Creating %s', objects)
-                os.makedirs(objects)
+        if os.path.exists(tree) and release.get('rsync_out_objs'):
             self.call(release['rsync_out_objs'])
             self.call(release['rsync_out_rest'])
 
