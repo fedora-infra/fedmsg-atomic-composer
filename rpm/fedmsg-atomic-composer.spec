@@ -56,7 +56,7 @@ install -D -m644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 %{_bindir}/%{name}-cli
 %{python_sitelib}/%{modname}/
 %{python_sitelib}/%{modname}*.egg-info
-%attr(755, rpmostreecompose, rpmostreecompose) /srv/fedora-atomic/
+%attr(775, root, mock) /srv/fedora-atomic/
 
 %files consumer
 %config(noreplace) %{_sysconfdir}/fedmsg.d/%{modname}.py*
