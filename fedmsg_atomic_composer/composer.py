@@ -45,14 +45,13 @@ class AtomicComposer(object):
             self.update_ostree_summary(release)
             self.sync_out(release)
             release['result'] = 'success'
+            self.cleanup(release)
         except:
             if hasattr(self, 'log'):
                 self.log.exception('Compose failed')
             else:
                 traceback.print_exc()
             release['result'] = 'failed'
-        finally:
-            self.cleanup(release)
         return release
 
     def setup_logger(self, release):
