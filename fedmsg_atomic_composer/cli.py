@@ -46,6 +46,12 @@ def compose(release):
     click.echo('Log: {log_file}'.format(**result))
 
 
+@cli.command(help='List available releases')
+def releases():
+    for release in config['releases']:
+        click.echo(release)
+
+
 @cli.command()
 @click.argument('release')
 def clean(release):

@@ -8,4 +8,3 @@ cp rpm/*.spec ~/rpmbuild/SPECS/ && \
 rpmbuild -ba ~/rpmbuild/SPECS/$PACKAGE.spec && \
 sudo rpm -e $PACKAGE{,-consumer} ; \
 sudo rpm -vih ~/rpmbuild/RPMS/noarch/$PACKAGE{,-consumer}-$VERSION-$RELEASE.*.noarch.rpm
-ansible-playbook -v ansible/playbook.yml

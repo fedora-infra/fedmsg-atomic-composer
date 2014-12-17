@@ -58,10 +58,10 @@ config = dict(
     },
 
     # Output directories
-    work_dir='/srv/fedora-atomic',
-    prod_dir='{work_dir}/production',
-    canonical_dir='{prod_dir}/{version}/{arch}/{repo}/{tree}',
-    output_dir='{work_dir}/{version}/{arch}/{repo}/{tree}',
+    prod_dir='/srv/fedora-atomic',
+    work_dir='{prod_dir}/work',
+    canonical_dir='{prod_dir}/{version}',
+    output_dir='{work_dir}/{version}/{arch}/{tree}',
     log_dir='{work_dir}/logs/{version}/{arch}/{repo}/{tree}',
 
     # A list of other directories to mount in the mock container
@@ -86,7 +86,7 @@ config = dict(
     rsync_out_objs='/usr/bin/rsync -rvp --ignore-existing {output_dir}/objects/ {canonical_dir}/objects/',
     rsync_out_rest='/usr/bin/rsync -rvp --exclude=objects/ {output_dir}/ {canonical_dir}/',
 
-    map_to_release=('work_dir', 'prod_dir', 'output_dir', 'log_dir',
+    map_to_release=('prod_dir', 'work_dir', 'output_dir', 'log_dir',
                     'git_repo', 'git_cache', 'mock_cmd', 'ostree_init',
                     'ostree_compose', 'ostree_summary', 'canonical_dir',
                     'repos', 'rsync_in_objs', 'rsync_in_rest', 'rsync_out_objs',

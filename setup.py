@@ -16,6 +16,6 @@ setup(
     [moksha.consumer]
     fedmsg_atomic_composer = fedmsg_atomic_composer.consumer:AtomicConsumer
     [console_scripts]
-    fedmsg-atomic-composer-cli = fedmsg_atomic_composer.cli:compose
+    fedmsg-atomic-composer-cli = fedmsg_atomic_composer.cli:cli
     """,
 )
