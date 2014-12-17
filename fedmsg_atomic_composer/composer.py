@@ -162,7 +162,11 @@ class AtomicComposer(object):
     def sync_in(self, release):
         """Sync the canonical repo to our local working directory"""
         tree = release['canonical_dir']
-        if os.path.exists(tree):
+        if os.path.exists(tree) and release.get('rsync_in_objs'):
+            out = release['output_dir']
+            if not os.path.isdir(out):
+                self.log.info('Creating %s', out)
+                os.makedirs(out)
             self.call(release['rsync_in_objs'])
             self.call(release['rsync_in_rest'])
 
