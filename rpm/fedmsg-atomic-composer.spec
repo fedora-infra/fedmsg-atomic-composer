@@ -52,7 +52,7 @@ install -D -m644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 %endif
 
 %files
-%doc README.rst LICENSE ansible
+%doc README.rst LICENSE
 %{_bindir}/%{name}-cli
 %{python_sitelib}/%{modname}/
 %{python_sitelib}/%{modname}*.egg-info
