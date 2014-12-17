@@ -14,6 +14,7 @@
 import click
 import time
 import tempfile
+import pprint
 
 from fedmsg_atomic_composer.composer import AtomicComposer
 from fedmsg_atomic_composer.config import config
@@ -47,9 +48,13 @@ def compose(release):
 
 
 @cli.command(help='List available releases')
-def releases():
-    for release in config['releases']:
-        click.echo(release)
+@click.option('--json', is_flag=True)
+def releases(json):
+    if json:
+        click.echo(pprint.pformat(config['releases']))
+    else:
+        for release in config['releases']:
+            click.echo(release)
 
 
 @cli.command()
