@@ -77,12 +77,22 @@ Composing a tree via the CLI
 
 .. code-block:: bash
 
+   $ fedmsg-atomic-composer-cli compose f21-updates
+
+.. code-block:: bash
+
    $ fedmsg-atomic-composer-cli releases
    f21-updates
    f21-updates-testing
    rawhide
 
-   $ fedmsg-atomic-composer-cli compose f21-updates
+   $ fedmsg-atomic-composer-cli releases --json
+   {'f21-updates': {'arch': 'x86_64',
+                    'canonical_dir': '/srv/fedora-atomic/21',
+                    'git_branch': 'f21',
+                    'git_cache': '/srv/fedora-atomic/work/fedora-atomic.git',
+                    'git_repo': 'https://git.fedorahosted.org/git/fedora-atomic.git',
+                    …
 
 
 Using the Python API

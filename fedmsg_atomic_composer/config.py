@@ -48,10 +48,27 @@ config = dict(
             'mock': 'fedora-21-updates-testing-x86_64',
             'repos': {},
         },
+
+        'rawhide': {
+            'name': 'rawhide',
+            'repo': 'rawhide',
+            'version': 'rawhide',
+            'arch': 'x86_64',
+            'tree': 'docker-host',
+            'treefile': {
+                'include': 'fedora-atomic-docker-host.json',
+                'ref': 'fedora-atomic/rawhide/x86_64/docker-host',
+                'repos': ['rawhide'],
+            },
+            'git_branch': 'f21',
+            'mock': 'fedora-rawhide-x86_64',
+            'repos': {},
+        },
     },
 
     # Package repositories to use in the mock container and ostree compose
     repos={
+        'rawhide': 'https://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/{arch}/os/',
         'fedora': 'https://dl.fedoraproject.org/pub/fedora/linux/releases/{version}/Everything/{arch}/os/',
         'updates': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
         'updates-testing': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
@@ -73,6 +90,7 @@ config = dict(
 
     # Mock command
     mock_cmd='/usr/bin/mock%s-r {mock}' % (rhel6 and ' ' or ' --new-chroot '),
+    mock_clean=True,
 
     # OSTree commands
     ostree_init='/usr/bin/ostree --repo={output_dir} init --mode=archive-z2',
@@ -90,7 +108,7 @@ config = dict(
                     'git_repo', 'git_cache', 'mock_cmd', 'ostree_init',
                     'ostree_compose', 'ostree_summary', 'canonical_dir',
                     'repos', 'rsync_in_objs', 'rsync_in_rest', 'rsync_out_objs',
-                    'rsync_out_rest', 'mount_dirs'),
+                    'rsync_out_rest', 'mount_dirs', 'mock_clean'),
 )
 
 # Map and expand certain variables to each release
@@ -104,5 +122,7 @@ for key in config.get('map_to_release', []):
             release[key] = []
             for item in config[key]:
                 release[key].append(item.format(**release))
+        elif isinstance(config[key], bool):
+            release[key] = config[key]
         else:
             release[key] = config[key].format(**release)

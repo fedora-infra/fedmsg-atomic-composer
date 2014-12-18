@@ -1,7 +1,7 @@
 %global modname fedmsg_atomic_composer
 
 Name:           fedmsg-atomic-composer
-Version:        2014.2
+Version:        2014.3
 Release:        1%{?dist}
 Summary:        Composes atomic trees when Fedora repositories are updated
 
@@ -52,7 +52,7 @@ install -D -m644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 %endif
 
 %files
-%doc README.rst LICENSE ansible
+%doc README.rst LICENSE
 %{_bindir}/%{name}-cli
 %{python_sitelib}/%{modname}/
 %{python_sitelib}/%{modname}*.egg-info

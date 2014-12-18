@@ -24,11 +24,12 @@ assumeyes=1
 metadata_expire=0
 
 % for repo_name, url in repos.items():
-% if repo_name == 'updates-testing':
-    % if repo != repo_name:
+
+## Skip repos that aren't enabled in the treefile
+% if repo_name not in treefile['repos']:
 <% continue %>
-    % endif
 % endif
+
 [${repo_name}]
 name=Fedora ${version} ${repo_name}
 baseurl=${url}
