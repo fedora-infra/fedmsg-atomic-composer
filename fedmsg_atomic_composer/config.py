@@ -90,6 +90,7 @@ config = dict(
 
     # Mock command
     mock_cmd='/usr/bin/mock%s-r {mock}' % (rhel6 and ' ' or ' --new-chroot '),
+    mock_clean=True,
 
     # OSTree commands
     ostree_init='/usr/bin/ostree --repo={output_dir} init --mode=archive-z2',
@@ -107,7 +108,7 @@ config = dict(
                     'git_repo', 'git_cache', 'mock_cmd', 'ostree_init',
                     'ostree_compose', 'ostree_summary', 'canonical_dir',
                     'repos', 'rsync_in_objs', 'rsync_in_rest', 'rsync_out_objs',
-                    'rsync_out_rest', 'mount_dirs'),
+                    'rsync_out_rest', 'mount_dirs', 'mock_clean'),
 )
 
 # Map and expand certain variables to each release
