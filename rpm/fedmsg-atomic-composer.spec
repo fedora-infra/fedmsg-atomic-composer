@@ -1,7 +1,7 @@
 %global modname fedmsg_atomic_composer
 
 Name:           fedmsg-atomic-composer
-Version:        2014.2
+Version:        2014.3
 Release:        1%{?dist}
 Summary:        Composes atomic trees when Fedora repositories are updated
 

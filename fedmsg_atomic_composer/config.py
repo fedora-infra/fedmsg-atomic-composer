@@ -122,5 +122,7 @@ for key in config.get('map_to_release', []):
             release[key] = []
             for item in config[key]:
                 release[key].append(item.format(**release))
+        elif isinstance(config[key], bool):
+            release[key] = config[key]
         else:
             release[key] = config[key].format(**release)

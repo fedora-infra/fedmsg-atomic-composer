@@ -106,9 +106,10 @@ class AtomicComposer(object):
             self.mock_cmd(release, '--init')
             self.log.info('mock chroot initialized')
         else:
-            if release.get('mock_clean', False):
+            if release.get('mock_clean'):
                 self.mock_cmd(release, '--clean')
-                self.log.info('mock chroot cleaned')
+                self.mock_cmd(release, '--init')
+                self.log.info('mock chroot cleaned & initialized')
             else:
                 self.mock_cmd(release, '--update')
                 self.log.info('mock chroot updated')
