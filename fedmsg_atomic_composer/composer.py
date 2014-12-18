@@ -35,6 +35,7 @@ class AtomicComposer(object):
         release['timestamp'] = time.strftime('%y%m%d.%H%M')
         try:
             self.setup_logger(release)
+            self.log.debug(release)
             self.update_configs(release)
             self.generate_mock_config(release)
             self.init_mock(release)
@@ -121,7 +122,9 @@ class AtomicComposer(object):
         for cfg in ('site-defaults.cfg', 'logging.ini'):
             os.symlink('/etc/mock/%s' % cfg, os.path.join(mock_dir, cfg))
         with file(mock_cfg, 'w') as cfg:
-            cfg.write(Template(mock_tmpl).render(**release))
+            mock_out = Template(mock_tmpl).render(**release)
+            self.log.debug('Writing %s:\n%s', mock_cfg, mock_out)
+            cfg.write(mock_out)
 
     def mock_chroot(self, release, cmd):
         """Run a commend in the mock container for a release"""
@@ -132,7 +135,9 @@ class AtomicComposer(object):
         repo_tmpl = pkg_resources.resource_string(__name__, 'templates/repo.mako')
         repo_file = os.path.join(release['git_dir'], '%s.repo' % release['repo'])
         with file(repo_file, 'w') as repo:
-            repo.write(Template(repo_tmpl).render(**release))
+            repo_out = Template(repo_tmpl).render(**release)
+            self.log.debug('Writing repo file %s:\n%s', repo_file, repo_out)
+            repo.write(repo_out)
         self.log.info('Wrote repo configuration to %s', repo_file)
 
     def ostree_init(self, release):
