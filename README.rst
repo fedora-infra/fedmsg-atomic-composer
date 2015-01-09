@@ -24,7 +24,7 @@ Bootstrap
 
 .. code-block::
 
-   sudo yum -y install git rpmdevtools python-{devel,mock} ansible
+   sudo yum -y install git rpmdevtools python-{devel,mock}
    rpmdev-setuptree
 
 
