@@ -32,7 +32,11 @@ metadata_expire=0
 
 [${repo_name}]
 name=Fedora ${version} ${repo_name}
+% if 'metalink' in url:
+metalink=${url}
+% else:
 baseurl=${url}
+% endif
 enabled=1
 cost=5000
 % endfor

@@ -68,10 +68,10 @@ config = dict(
 
     # Package repositories to use in the mock container and ostree compose
     repos={
-        'rawhide': 'https://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/{arch}/os/',
-        'fedora': 'https://dl.fedoraproject.org/pub/fedora/linux/releases/{version}/Everything/{arch}/os/',
-        'updates': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
-        'updates-testing': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
+        'rawhide': 'https://mirrors.fedoraproject.org/metalink?repo={version}&arch={arch}',
+        'fedora': 'https://mirrors.fedoraproject.org/metalink?repo=fedora-{version}&arch={arch}',
+        'updates': 'https://mirrors.fedoraproject.org/metalink?repo=updates-released-f{version}&arch={arch}',
+        'updates-testing': 'https://mirrors.fedoraproject.org/metalink?repo=updates-testing-f{version}&arch={arch}',
     },
 
     # Output directories
