@@ -19,6 +19,7 @@ config = dict(
                 'include': 'fedora-atomic-docker-host.json',
                 'ref': 'fedora-atomic/f21/x86_64/updates/docker-host',
                 'repos': ['fedora', 'updates'],
+                'packages': [],
             },
 
             # The name of the mock container to build and maintain
