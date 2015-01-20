@@ -128,6 +128,7 @@ config = dict(
     rsync_out_objs='/usr/bin/rsync -rvp --ignore-existing {output_dir}/objects/ {canonical_dir}/objects/',
     rsync_out_rest='/usr/bin/rsync -rvp --exclude=objects/ {output_dir}/ {canonical_dir}/',
 
+    # Define the config keys to map to each release, in the appropriate order
     map_to_release=('prod_dir', 'work_dir', 'output_dir', 'log_dir',
                     'git_repo', 'git_cache', 'mock_cmd', 'ostree_init',
                     'ostree_compose', 'ostree_summary', 'canonical_dir',
@@ -135,19 +136,20 @@ config = dict(
                     'rsync_out_rest', 'mount_dirs', 'mock_clean'),
 )
 
-# Map and expand certain variables to each release
+# Map and expand variables to each release
 for key in config.get('map_to_release', []):
     for name, release in config['releases'].items():
-        if isinstance(config[key], dict):
+        value = config[key]
+        if isinstance(value, dict):
             release[key] = {}
-            for k, v in config[key].items():
+            for k, v in value.items():
                 k = k.format(**release)
                 release[key][k] = v.format(**release)
-        elif isinstance(config[key], (list, tuple)):
+        elif isinstance(value, (list, tuple)):
             release[key] = []
-            for item in config[key]:
+            for item in value:
                 release[key].append(item.format(**release))
-        elif isinstance(config[key], bool):
-            release[key] = config[key]
+        elif isinstance(value, bool):
+            release[key] = value
         else:
-            release[key] = config[key].format(**release)
+            release[key] = value.format(**release)
