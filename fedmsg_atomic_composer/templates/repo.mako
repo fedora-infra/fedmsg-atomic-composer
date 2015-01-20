@@ -4,7 +4,11 @@
 % for repo, url in repos.items():
 [${repo}]
 name=Fedora ${version} ${repo}
-baseurl=${url.format(**locals())}
+% if 'metalink' in url:
+metalink=${url}
+% else:
+baseurl=${url}
+% endif
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${version}-${arch}
 enabled=0

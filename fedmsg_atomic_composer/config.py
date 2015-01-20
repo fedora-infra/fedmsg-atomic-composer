@@ -1,3 +1,26 @@
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+The primary atomic composer configuration.
+
+The appropriate entry in the 'releases' must be passed into
+the AtomicComposer.composer method.
+
+The code at the bottom maps+expands the paths &
+commands to each of the releases, for ease of
+configuration.
+"""
+
 # Check if we're running on RHEL6 and disable
 # `mock --new-chroot` and `rpm-ostree --workdir-tmpfs`
 import platform
@@ -18,7 +41,8 @@ config = dict(
             'treefile': {
                 'include': 'fedora-atomic-docker-host.json',
                 'ref': 'fedora-atomic/f21/x86_64/updates/docker-host',
-                'repos': ['fedora', 'updates'],
+                'repos': ['fedora-21', 'updates'],
+                'packages': [],
             },
 
             # The name of the mock container to build and maintain
@@ -42,7 +66,7 @@ config = dict(
             'treefile': {
                 'include': 'fedora-atomic-docker-host.json',
                 'ref': 'fedora-atomic/f21/x86_64/updates-testing/docker-host',
-                'repos': ['fedora', 'updates', 'updates-testing'],
+                'repos': ['fedora-21', 'updates', 'updates-testing'],
             },
             'git_branch': 'f21',
             'mock': 'fedora-21-updates-testing-x86_64',
@@ -68,10 +92,10 @@ config = dict(
 
     # Package repositories to use in the mock container and ostree compose
     repos={
-        'rawhide': 'https://dl.fedoraproject.org/pub/fedora/linux/development/rawhide/{arch}/os/',
-        'fedora': 'https://dl.fedoraproject.org/pub/fedora/linux/releases/{version}/Everything/{arch}/os/',
-        'updates': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/{version}/{arch}/',
-        'updates-testing': 'https://dl.fedoraproject.org/pub/fedora/linux/updates/testing/{version}/{arch}/',
+        'rawhide': 'https://mirrors.fedoraproject.org/metalink?repo={version}&arch={arch}',
+        'fedora-{version}': 'https://mirrors.fedoraproject.org/metalink?repo=fedora-{version}&arch={arch}',
+        'updates': 'https://mirrors.fedoraproject.org/metalink?repo=updates-released-f{version}&arch={arch}',
+        'updates-testing': 'https://mirrors.fedoraproject.org/metalink?repo=updates-testing-f{version}&arch={arch}',
     },
 
     # Output directories
@@ -98,7 +122,7 @@ config = dict(
             (rhel6 and ' ' or ' --workdir-tmpfs ') + '--repo={output_dir} %s',
     ostree_summary='/usr/bin/ostree --repo={output_dir} summary --update',
 
-    # rsync commands
+    # rsync commands. Set to an empty string to disable.
     rsync_in_objs='/usr/bin/rsync -rvp --ignore-existing {canonical_dir}/objects/ {output_dir}/objects/',
     rsync_in_rest='/usr/bin/rsync -rvp --exclude=objects/ {canonical_dir}/ {output_dir}/',
     rsync_out_objs='/usr/bin/rsync -rvp --ignore-existing {output_dir}/objects/ {canonical_dir}/objects/',
@@ -117,6 +141,7 @@ for key in config.get('map_to_release', []):
         if isinstance(config[key], dict):
             release[key] = {}
             for k, v in config[key].items():
+                k = k.format(**release)
                 release[key][k] = v.format(**release)
         elif isinstance(config[key], (list, tuple)):
             release[key] = []
