@@ -1,3 +1,26 @@
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+The primary atomic composer configuration.
+
+The appropriate entry in the 'releases' must be passed into
+the AtomicComposer.composer method.
+
+The code at the bottom maps+expands the paths &
+commands to each of the releases, for ease of
+configuration.
+"""
+
 # Check if we're running on RHEL6 and disable
 # `mock --new-chroot` and `rpm-ostree --workdir-tmpfs`
 import platform
