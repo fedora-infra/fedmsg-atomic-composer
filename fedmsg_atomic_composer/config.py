@@ -41,7 +41,7 @@ config = dict(
             'treefile': {
                 'include': 'fedora-atomic-docker-host.json',
                 'ref': 'fedora-atomic/f21/x86_64/updates/docker-host',
-                'repos': ['fedora', 'updates'],
+                'repos': ['fedora-21', 'updates'],
                 'packages': [],
             },
 
@@ -66,7 +66,7 @@ config = dict(
             'treefile': {
                 'include': 'fedora-atomic-docker-host.json',
                 'ref': 'fedora-atomic/f21/x86_64/updates-testing/docker-host',
-                'repos': ['fedora', 'updates', 'updates-testing'],
+                'repos': ['fedora-21', 'updates', 'updates-testing'],
             },
             'git_branch': 'f21',
             'mock': 'fedora-21-updates-testing-x86_64',
@@ -93,7 +93,7 @@ config = dict(
     # Package repositories to use in the mock container and ostree compose
     repos={
         'rawhide': 'https://mirrors.fedoraproject.org/metalink?repo={version}&arch={arch}',
-        'fedora': 'https://mirrors.fedoraproject.org/metalink?repo=fedora-{version}&arch={arch}',
+        'fedora-{version}': 'https://mirrors.fedoraproject.org/metalink?repo=fedora-{version}&arch={arch}',
         'updates': 'https://mirrors.fedoraproject.org/metalink?repo=updates-released-f{version}&arch={arch}',
         'updates-testing': 'https://mirrors.fedoraproject.org/metalink?repo=updates-testing-f{version}&arch={arch}',
     },
@@ -141,6 +141,7 @@ for key in config.get('map_to_release', []):
         if isinstance(config[key], dict):
             release[key] = {}
             for k, v in config[key].items():
+                k = k.format(**release)
                 release[key][k] = v.format(**release)
         elif isinstance(config[key], (list, tuple)):
             release[key] = []
