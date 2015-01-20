@@ -139,17 +139,18 @@ config = dict(
 # Map and expand variables to each release
 for key in config.get('map_to_release', []):
     for name, release in config['releases'].items():
-        value = config[key]
-        if isinstance(value, dict):
-            release[key] = {}
-            for k, v in value.items():
-                k = k.format(**release)
-                release[key][k] = v.format(**release)
-        elif isinstance(value, (list, tuple)):
-            release[key] = []
-            for item in value:
-                release[key].append(item.format(**release))
-        elif isinstance(value, bool):
-            release[key] = value
-        else:
-            release[key] = value.format(**release)
+        if key in config:
+            value = config[key]
+            if isinstance(value, dict):
+                release[key] = {}
+                for k, v in value.items():
+                    k = k.format(**release)
+                    release[key][k] = v.format(**release)
+            elif isinstance(value, (list, tuple)):
+                release[key] = []
+                for item in value:
+                    release[key].append(item.format(**release))
+            elif isinstance(value, bool):
+                release[key] = value
+            else:
+                release[key] = value.format(**release)
