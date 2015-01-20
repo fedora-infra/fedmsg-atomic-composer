@@ -122,11 +122,11 @@ config = dict(
             (rhel6 and ' ' or ' --workdir-tmpfs ') + '--repo={output_dir} %s',
     ostree_summary='/usr/bin/ostree --repo={output_dir} summary --update',
 
-    # rsync commands. Set to an empty string to disable.
-    rsync_in_objs='/usr/bin/rsync -rvp --ignore-existing {canonical_dir}/objects/ {output_dir}/objects/',
-    rsync_in_rest='/usr/bin/rsync -rvp --exclude=objects/ {canonical_dir}/ {output_dir}/',
-    rsync_out_objs='/usr/bin/rsync -rvp --ignore-existing {output_dir}/objects/ {canonical_dir}/objects/',
-    rsync_out_rest='/usr/bin/rsync -rvp --exclude=objects/ {output_dir}/ {canonical_dir}/',
+    # Bi-directional syncing
+    #rsync_in_objs='/usr/bin/rsync -rvp --ignore-existing {canonical_dir}/objects/ {output_dir}/objects/',
+    #rsync_in_rest='/usr/bin/rsync -rvp --exclude=objects/ {canonical_dir}/ {output_dir}/',
+    #rsync_out_objs='/usr/bin/rsync -rvp --ignore-existing {output_dir}/objects/ {canonical_dir}/objects/',
+    #rsync_out_rest='/usr/bin/rsync -rvp --exclude=objects/ {output_dir}/ {canonical_dir}/',
 
     # Define the config keys to map to each release, in the appropriate order
     map_to_release=('prod_dir', 'work_dir', 'output_dir', 'log_dir',
