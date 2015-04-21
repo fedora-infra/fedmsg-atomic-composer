@@ -36,8 +36,8 @@ define all of your releases like so:
 
 .. code-block:: bash
 
-   config = dict(
-        releases={
+   config = {
+        'releases': {
             'f21-updates': {
                 'name': 'f21-updates',
                 'repo': 'updates',
