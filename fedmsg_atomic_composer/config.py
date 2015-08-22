@@ -135,7 +135,8 @@ config = dict(
                     'git_repo', 'git_cache', 'mock_cmd', 'ostree_init',
                     'ostree_compose', 'ostree_summary', 'canonical_dir',
                     'repos', 'rsync_in_objs', 'rsync_in_rest', 'rsync_out_objs',
-                    'rsync_out_rest', 'mount_dirs', 'mock_clean'),
+                    'rsync_out_rest', 'mount_dirs', 'mock_clean',
+                    'delete_repo_files'),
 )
 
 # Map and expand variables to each release
