@@ -14,6 +14,7 @@
 import os
 import copy
 import json
+import glob
 import time
 import shutil
 import logging
@@ -93,6 +94,11 @@ class AtomicComposer(object):
                                                     os.path.basename(git_repo))
         self.call(['git', 'clone', '-b', release['git_branch'],
                    git_cache, git_dir])
+
+        if release['delete_repo_files']:
+            for repo_file in glob.glob(os.path.join(git_dir, '*.repo')):
+                self.log.info('Deleting %s' % repo_file)
+                os.unlink(repo_file)
 
     def mock_cmd(self, release, *cmd):
         """Run a mock command in the chroot for a given release"""

@@ -111,6 +111,8 @@ config = dict(
     # The git repo containing our parent treefiles and yum repos
     git_repo='https://git.fedorahosted.org/git/fedora-atomic.git',
     git_cache='{work_dir}/fedora-atomic.git',
+    # Some branches contain custom .repo files that we don't want to use
+    delete_repo_files=True,
 
     # Mock command
     mock_cmd='/usr/bin/mock%s-r {mock}' % (rhel6 and ' ' or ' --new-chroot '),
