@@ -29,9 +29,12 @@ class AtomicConsumer(fedmsg.consumers.FedmsgConsumer):
         for key, item in hub.config.items():
             setattr(self, key, item)
 
-        self.topic = self.fedmsg_atomic_topic
+        self.topic = getattr(self, 'fedmsg_atomic_topic', None)
 
         super(AtomicConsumer, self).__init__(hub, *args, **kw)
+
+        if not self.topic:
+            self.log.warn("No 'fedmsg_atomic_topic' set.")
 
     def consume(self, msg):
         """Called with each incoming fedmsg.
