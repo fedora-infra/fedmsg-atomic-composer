@@ -1,7 +1,7 @@
 %global modname fedmsg_atomic_composer
 
 Name:           fedmsg-atomic-composer
-Version:        2015.1
+Version:        2016.1
 Release:        1%{?dist}
 Summary:        Composes atomic trees when Fedora repositories are updated
 
@@ -66,6 +66,9 @@ install -D -m644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 
 
 %changelog
+* Wed Jan 06 2016 Luke Macken <lmacken@redhat.com> - 2016.1-1
+- Latest upstream release
+
 * Tue Jan 20 2015 Luke Macken <lmacken@redhat.com> - 2015.1-1
 - Latest upstream release
 
