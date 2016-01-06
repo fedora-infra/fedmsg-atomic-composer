@@ -2,6 +2,12 @@
 ## These are written along-side of the treefile.json,
 ## which are then picked up by rpm-ostree.
 % for repo, url in repos.items():
+#
+## Skip repos that aren't enabled in the treefile
+% if repo_name not in treefile['repos']:
+<% continue %>
+% endif
+
 [${repo}]
 name=Fedora ${version} ${repo}
 % if 'metalink' in url:
