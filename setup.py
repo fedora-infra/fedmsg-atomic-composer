@@ -8,7 +8,7 @@ setup(
     author='Luke Macken',
     author_email='lmacken@redhat.com',
     url='https://github.com/fedora-infra/fedmsg-atomic-composer',
-    install_requires=['fedmsg'],
+    install_requires=['fedmsg', 'mako'],
     tests_require=['mock'],
     packages=['fedmsg_atomic_composer'],
     package_data={'fedmsg_atomic_composer': ['templates/*.mako']},
