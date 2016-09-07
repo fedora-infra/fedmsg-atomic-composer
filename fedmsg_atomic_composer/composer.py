@@ -100,9 +100,13 @@ class AtomicComposer(object):
                 self.log.info('Deleting %s' % repo_file)
                 os.unlink(repo_file)
 
-    def mock_cmd(self, release, *cmd):
+    def mock_cmd(self, release, *cmd, **kwargs):
         """Run a mock command in the chroot for a given release"""
-        self.call('{mock_cmd} --configdir={mock_dir}'.format(**release).split()
+        fmt = '{mock_cmd}'
+        if kwargs.get('new_chroot') is True:
+            fmt +=' --new-chroot'
+        fmt += ' --configdir={mock_dir}'
+        self.call(fmt.format(**release).split()
                   + list(cmd))
 
     def init_mock(self, release):
@@ -133,9 +137,9 @@ class AtomicComposer(object):
             self.log.debug('Writing %s:\n%s', mock_cfg, mock_out)
             cfg.write(mock_out)
 
-    def mock_chroot(self, release, cmd):
+    def mock_chroot(self, release, cmd, **kwargs):
         """Run a commend in the mock container for a release"""
-        self.mock_cmd(release, '--chroot', cmd)
+        self.mock_cmd(release, '--chroot', cmd, **kwargs)
 
     def generate_repo_files(self, release):
         """Dynamically generate our yum repo configuration"""
@@ -164,7 +168,8 @@ class AtomicComposer(object):
         cmd = release['ostree_compose'] % treefile
         with file(treefile, 'w') as tree:
             json.dump(release['treefile'], tree)
-        self.mock_chroot(release, cmd)
+        # Only use new_chroot for the invocation, as --clean and --new-chroot are buggy together right now
+        self.mock_chroot(release, cmd, new_chroot=True)
         self.log.info('rpm-ostree compose complete (%s)',
                       datetime.utcnow() - start)
 

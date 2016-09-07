@@ -115,7 +115,7 @@ config = dict(
     delete_repo_files=True,
 
     # Mock command
-    mock_cmd='/usr/bin/mock%s-r {mock}' % (rhel6 and ' ' or ' --new-chroot '),
+    mock_cmd='/usr/bin/mock -r {mock}',
     mock_clean=True,
 
     # OSTree commands
