@@ -32,7 +32,9 @@ class AtomicComposer(object):
 
     def compose(self, release):
         release = copy.deepcopy(release)
-        release['tmp_dir'] = tempfile.mkdtemp()
+        # We need to use /var/tmp because systemd-nspawn will mount
+        # a tmpfs on /tmp in the container.
+        release['tmp_dir'] = tempfile.mkdtemp(dir='/var/tmp')
         release['timestamp'] = time.strftime('%y%m%d.%H%M')
         try:
             self.setup_logger(release)
