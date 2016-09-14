@@ -99,7 +99,7 @@ config = dict(
     },
 
     # Output directories
-    prod_dir='/srv/fedora-atomic',
+    prod_dir='/var/lib/fedora-atomic',
     work_dir='{prod_dir}/work',
     canonical_dir='{prod_dir}/{version}',
     output_dir='{work_dir}/{version}/{arch}/{tree}',

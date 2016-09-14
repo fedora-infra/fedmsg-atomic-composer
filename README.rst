@@ -88,9 +88,9 @@ Composing a tree via the CLI
 
    $ fedmsg-atomic-composer-cli releases --json
    {'f21-updates': {'arch': 'x86_64',
-                    'canonical_dir': '/srv/fedora-atomic/21',
+                    'canonical_dir': '/var/lib/fedora-atomic/21',
                     'git_branch': 'f21',
-                    'git_cache': '/srv/fedora-atomic/work/fedora-atomic.git',
+                    'git_cache': '/var/lib/fedora-atomic/work/fedora-atomic.git',
                     'git_repo': 'https://git.fedorahosted.org/git/fedora-atomic.git',
                     …
 
