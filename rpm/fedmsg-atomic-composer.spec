@@ -43,7 +43,7 @@ when new Fedora repositories sync to the master mirror.
 
 %install
 %{__python} setup.py install -O1 --skip-build --root=%{buildroot}
-mkdir -p %{buildroot}/srv/fedora-atomic/
+mkdir -p %{buildroot}/%{_sharedstatedir}/lib/fedora-atomic/
 
 install -D -m644 fedmsg.d/config.py %{buildroot}%{_sysconfdir}/fedmsg.d/%{modname}.py
 
@@ -56,7 +56,7 @@ install -D -m644 systemd/%{name}.service %{buildroot}%{_unitdir}/%{name}.service
 %{_bindir}/%{name}-cli
 %{python_sitelib}/%{modname}/
 %{python_sitelib}/%{modname}*.egg-info
-%attr(775, root, mock) /srv/fedora-atomic/
+%attr(775, root, mock) /%{_sharedstatedir}/fedora-atomic/
 
 %files consumer
 %config(noreplace) %{_sysconfdir}/fedmsg.d/%{modname}.py*
