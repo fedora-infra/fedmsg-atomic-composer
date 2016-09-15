@@ -45,9 +45,12 @@ class AtomicComposer(object):
             self.sync_in(release)
             self.ostree_init(release)
             self.generate_repo_files(release)
-            self.ostree_compose(release)
+            ref, commitid = self.ostree_compose(release)
             self.update_ostree_summary(release)
             self.sync_out(release)
+
+            release['ref'] = ref
+            release['commitid'] = commitid
             release['result'] = 'success'
             self.cleanup(release)
         except:
@@ -108,8 +111,8 @@ class AtomicComposer(object):
         if kwargs.get('new_chroot') is True:
             fmt +=' --new-chroot'
         fmt += ' --configdir={mock_dir}'
-        self.call(fmt.format(**release).split()
-                  + list(cmd))
+        return self.call(fmt.format(**release).split()
+                         + list(cmd))
 
     def init_mock(self, release):
         """Initialize/update our mock chroot"""
@@ -141,7 +144,7 @@ class AtomicComposer(object):
 
     def mock_chroot(self, release, cmd, **kwargs):
         """Run a commend in the mock container for a release"""
-        self.mock_cmd(release, '--chroot', cmd, **kwargs)
+        return self.mock_cmd(release, '--chroot', cmd, **kwargs)
 
     def generate_repo_files(self, release):
         """Dynamically generate our yum repo configuration"""
@@ -171,9 +174,17 @@ class AtomicComposer(object):
         with file(treefile, 'w') as tree:
             json.dump(release['treefile'], tree)
         # Only use new_chroot for the invocation, as --clean and --new-chroot are buggy together right now
-        self.mock_chroot(release, cmd, new_chroot=True)
-        self.log.info('rpm-ostree compose complete (%s)',
-                      datetime.utcnow() - start)
+        out, err, rcode = self.mock_chroot(release, cmd, new_chroot=True)
+        ref = None
+        commitid = None
+        for line in out.split('\n'):
+            if ' => ' in line:
+                # This line is the: ref => commitid line
+                line = line.replace('\n', '')
+                ref, _, commitid = line.partition(' => ')
+        self.log.info('rpm-ostree compose complete (%s), ref %s, commitid %s',
+                      datetime.utcnow() - start, ref, commitid)
+        return ref, commitid
 
     def update_ostree_summary(self, release):
         """Update the ostree summary file and return a path to it"""
