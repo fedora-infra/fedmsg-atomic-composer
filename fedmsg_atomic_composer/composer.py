@@ -59,6 +59,8 @@ class AtomicComposer(object):
             else:
                 traceback.print_exc()
             release['result'] = 'failed'
+        finally:
+            self.cleanup_logger()
         return release
 
     def setup_logger(self, release):
@@ -71,21 +73,30 @@ class AtomicComposer(object):
         if not os.path.isdir(log_dir):
             os.makedirs(log_dir)
         stdout = logging.StreamHandler()
-        handler = logging.FileHandler(log_file)
+        self.log_handler = logging.FileHandler(log_file)
         log_format = ('%(asctime)s -  %(levelname)s - %(filename)s:'
                       '%(lineno)d - %(message)s')
         formatter = logging.Formatter(log_format)
-        handler.setFormatter(formatter)
-        handler.setLevel(logging.DEBUG)
+        self.log_handler.setFormatter(formatter)
+        self.log_handler.setLevel(logging.DEBUG)
         stdout.setFormatter(formatter)
         stdout.setLevel(logging.DEBUG)
-        logger.addHandler(handler)
+        logger.addHandler(self.log_handler)
         logger.addHandler(stdout)
         self.log = logger
 
     def cleanup(self, release):
         """Cleanup any temporary files after the compose"""
         shutil.rmtree(release['tmp_dir'])
+
+    def cleanup_logger(self):
+        """Clean up logger to close out file handles.
+
+        After this is called, writing to self.log will get logs ending up
+        getting discarded.
+        """
+        self.log_handler.close()
+        self.log.removeHandler(self.log_handler)
 
     def update_configs(self, release):
         """ Update the fedora-atomic.git repositories for a given release """
