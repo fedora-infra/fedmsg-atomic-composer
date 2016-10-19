@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='fedmsg-atomic-composer',
-    version='2016.2',
+    version='2016.3',
     license='GPLv3',
     description='Composes Atomic rpm-ostrees when Fedora repositories are updated',
     author='Luke Macken',
