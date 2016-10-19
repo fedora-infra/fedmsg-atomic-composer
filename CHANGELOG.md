@@ -16,3 +16,5 @@ The 2016.3 release contains the following bug fixes:
   ([#4](https://github.com/fedora-infra/fedmsg-atomic-composer/issues/4)).
 * ```/var/tmp``` is used for the temporary working directory instead of ```/tmp```
   ([544d7091](https://github.com/fedora-infra/fedmsg-atomic-composer/commit/544d7091)).
+* Log files are now closed during cleanup
+  ([#9](https://github.com/fedora-infra/fedmsg-atomic-composer/pull/9)).
