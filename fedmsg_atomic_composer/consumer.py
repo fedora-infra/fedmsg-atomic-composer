@@ -24,6 +24,8 @@ class AtomicConsumer(fedmsg.consumers.FedmsgConsumer):
     This consumer runs in the fedmsg-hub and reacts to whenever repositories
     sync to the master mirror.
     """
+    config_key = 'atomic_composer'
+
     def __init__(self, hub, *args, **kw):
         # Map all of the options from our /etc/fedmsg.d config to self
         for key, item in hub.config.items():
