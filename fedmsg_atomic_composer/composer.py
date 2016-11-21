@@ -235,7 +235,10 @@ class AtomicComposer(object):
         if out:
             self.log.info(out)
         if err:
-            self.log.error(err)
+            if p.returncode != 0:
+                self.log.info(err)
+            else:
+                self.log.error(err)
         if p.returncode != 0:
             self.log.error('returncode = %d' % p.returncode)
             raise Exception
