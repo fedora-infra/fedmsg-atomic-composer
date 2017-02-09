@@ -17,7 +17,7 @@ baseurl=${url}
 % endif
 gpgcheck=1
 gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-fedora-${version}-${arch}
-enabled=0
+enabled=1
 metadata_expire=0
 skip_if_unavailable=False
 %endfor
