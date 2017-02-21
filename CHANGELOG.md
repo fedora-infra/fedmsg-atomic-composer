@@ -1,5 +1,19 @@
 # Changelog
 
+## 2017.2.0
+
+This is a bugfix release, with the following commits:
+
+* AtomicConsumer now has a config key
+  ([5e32653f](https://github.com/fedora-infra/fedmsg-atomic-composer/commit/5e32653f)).
+* stderr messages are now logged at info and not error level
+  ([eba7e334](https://github.com/fedora-infra/fedmsg-atomic-composer/commit/eba7e334)).
+* Set enabled to 1 in repo.mako
+  ([1b51be98](https://github.com/fedora-infra/fedmsg-atomic-composer/commit/1b51be98)).
+* Explicity install ostree in the mock config
+  ([fd58aee1](https://github.com/fedora-infra/fedmsg-atomic-composer/commit/fd58aee1)).
+
+
 ## 2016.3
 
 The following features and changes in behavior are introduced in this version:
