@@ -2,7 +2,7 @@ config_opts['root'] = '${mock}'
 config_opts['target_arch'] = '${arch}'
 config_opts['dist'] = '${git_branch}'  # only useful for --resultdir variable subst
 config_opts['releasever'] = '${version}'
-config_opts['chroot_setup_cmd'] = 'install yum rpm-ostree'
+config_opts['chroot_setup_cmd'] = 'install yum rpm-ostree ostree'
 config_opts['extra_chroot_dirs'] = ['/run/lock']
 config_opts['plugin_conf']['bind_mount_enable'] = True
 config_opts['plugin_conf']['bind_mount_opts']['dirs'].append(('${work_dir}', '${work_dir}'))
