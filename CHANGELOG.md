@@ -12,7 +12,8 @@ This is a bugfix release, with the following commits:
   ([1b51be98](https://github.com/fedora-infra/fedmsg-atomic-composer/commit/1b51be98)).
 * Explicity install ostree in the mock config
   ([fd58aee1](https://github.com/fedora-infra/fedmsg-atomic-composer/commit/fd58aee1)).
-
+* Enable CAP_NET_ADMIN for systemd-nspawn in the mock config
+  ([#19](https://github.com/fedora-infra/fedmsg-atomic-composer/pull/19)).
 
 ## 2016.3
 
