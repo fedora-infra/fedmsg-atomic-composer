@@ -1,6 +1,6 @@
 # Changelog
 
-## 2017.2.0
+## 2017.0
 
 This is a bugfix release, with the following commits:
 
