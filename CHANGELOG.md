@@ -1,5 +1,11 @@
 # Changelog
 
+## 2017.1
+
+This release fixes a bug where exit codes were being used backwards to make log level decisions
+([#20](https://github.com/fedora-infra/fedmsg-atomic-composer/pull/20)).
+
+
 ## 2017.0
 
 This is a bugfix release, with the following commits:
