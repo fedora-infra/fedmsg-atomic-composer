@@ -1,13 +1,19 @@
 fedmsg-atomic-composer
 ======================
 
+Retirement
+----------
+
+As of Bodhi 3.0.0, this package is no longer used. Thus is it retired and deprecated.
+
+
+Features
+--------
+
 Triggers `Atomic <http://projectatomic.io>`_ ostree composes when Fedora
 updates/rawhide/branched repositories are updated.
 
 You can also trigger composes via a command-line tool or Python API.
-
-Features
---------
 
  * Simple JSON configuration
  * Compose trees in a lightweight `systemd-nspawn <http://www.freedesktop.org/software/systemd/man/systemd-nspawn.html>`_ container
